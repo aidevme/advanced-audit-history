@@ -1,0 +1,115 @@
+name: Security Vulnerability
+description: Report a security vulnerability (PRIVATE - will be handled confidentially)
+title: "[SECURITY] "
+labels: ["security", "triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## ⚠️ Security Vulnerability Report
+        
+        **IMPORTANT**: If this is a critical security vulnerability, please email security@yourcompany.com instead of creating a public issue.
+        
+        This form is for security concerns that need to be addressed but are not immediately exploitable.
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity Level
+      description: How severe is this security issue?
+      options:
+        - Low - Minimal Impact
+        - Medium - Moderate Impact
+        - High - Significant Impact
+        - Critical - Severe Impact
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Security Category
+      description: What type of security issue is this?
+      options:
+        - Authentication/Authorization
+        - Data Exposure
+        - Injection Attack
+        - Cross-Site Scripting (XSS)
+        - Sensitive Data Logging
+        - Insecure Dependencies
+        - Configuration Issue
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Vulnerability Description
+      description: Describe the security vulnerability
+      placeholder: |
+        What is the security issue?
+        What data or functionality is at risk?
+    validations:
+      required: true
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Potential Impact
+      description: What could happen if this vulnerability is exploited?
+      placeholder: |
+        If exploited, this could allow an attacker to...
+        The potential impact includes...
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: How to Reproduce
+      description: Steps to reproduce the vulnerability (if safe to share publicly)
+      placeholder: |
+        1. Configure the control with...
+        2. Access the endpoint at...
+        3. Observe that...
+
+  - type: textarea
+    id: affected-versions
+    attributes:
+      label: Affected Versions
+      description: Which versions of the control are affected?
+      placeholder: e.g., 2.0.0, 1.5.x, all versions
+    validations:
+      required: true
+
+  - type: textarea
+    id: mitigation
+    attributes:
+      label: Suggested Mitigation
+      description: If you have suggestions for fixing this issue, please share them
+      placeholder: This could be mitigated by...
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Links to related CVEs, security advisories, or documentation
+      placeholder: |
+        - CVE-XXXX-XXXXX
+        - https://...
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Responsible Disclosure
+      description: Please confirm your commitment to responsible disclosure
+      options:
+        - label: I will allow reasonable time for the maintainers to address this issue before public disclosure
+          required: true
+        - label: I have not and will not exploit this vulnerability maliciously
+          required: true
+        - label: I understand this issue will be handled with appropriate confidentiality
+          required: true
