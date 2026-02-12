@@ -7,7 +7,7 @@ Enterprise-grade PowerApps Component Framework (PCF) control for Dynamics 365/Po
 This project uses a **4-layer architecture**. Always maintain strict separation:
 
 1. **Presentation Layer** (`/AuditHistory/components/`) - React components only, no business logic
-2. **PCF Control Layer** (`/AuditHistory/index.ts`) - PCF lifecycle, Redux state management, event handlers
+2. **PCF Control Layer** (`/AuditHistory/index.ts`) - PCF lifecycle, MobX state management, event handlers
 3. **Service Layer** (`/AuditHistory/services/`) - All business logic encapsulated in services (AuditService, ExportService, NotificationService, AnalyticsSvc, FilterService, CacheService, SecurityService)
 4. **Data Access Layer** (`/AuditHistory/data/`) - Web API clients, OData query builders, caching
 
@@ -17,9 +17,10 @@ This project uses a **4-layer architecture**. Always maintain strict separation:
 
 ### PCF Control Entry Point (`index.ts`)
 - Implement standard PCF lifecycle: `init()`, `updateView()`, `getOutputs()`, `destroy()`
-- Use Redux for state management, not React useState at the control level
+- Use MobX stores for state management, not React useState at the control level
 - Always handle context binding changes in `updateView()`
 - Properly dispose resources in `destroy()` to prevent memory leaks
+- Dispose MobX reactions and observers in `destroy()`
 
 ### Service Layer Pattern
 ```typescript
@@ -33,6 +34,7 @@ class AuditService {
     // 3. Call API
     // 4. Transform response
     // 5. Update cache
+    // 6. Update MobX store with results
   }
 }
 ```
@@ -40,8 +42,91 @@ class AuditService {
 ### Component Structure
 - Use **FluentUI components** as the primary UI framework for Dynamics 365 consistency
 - All components in `/components/` must be functional components with TypeScript
-- Use custom hooks for shared logic (`/hooks/useAuditData.ts`, `/hooks/useFilters.ts`)
+- Wrap components with `observer()` from `mobx-react-lite` to subscribe to observables
+- Use custom hooks for shared logic (`/hooks/useAuditData.ts`, `/hooks/useStores.ts`)
+- Access stores via React Context: `const { auditStore } = useStores()`
 - Prop interfaces must be defined in component files or `/types/`
+
+### Documentation Standards (TSDoc)
+All components, services, and utilities must have TSDoc comments. Follow this pattern:
+
+```typescript
+/**
+ * TimelineView component displays audit history in an interactive timeline format.
+ * 
+ * @remarks
+ * This component uses virtual scrolling for performance with large datasets.
+ * Supports zoom, pan, and milestone markers for significant changes.
+ * 
+ * @example
+ * ```tsx
+ * <TimelineView
+ *   auditRecords={records}
+ *   onRecordSelect={handleSelect}
+ *   enableZoom={true}
+ * />
+ * ```
+ */
+export const TimelineView: React.FC<TimelineViewProps> = observer(({ auditRecords, onRecordSelect }) => {
+  // Component implementation
+});
+
+/**
+ * Props for the TimelineView component
+ * 
+ * @property auditRecords - Array of audit records to display in timeline
+ * @property onRecordSelect - Callback fired when user selects a record
+ * @property enableZoom - Optional. Enable zoom/pan functionality. Defaults to true
+ * @property className - Optional. Additional CSS classes for styling
+ */
+interface TimelineViewProps {
+  auditRecords: AuditRecord[];
+  onRecordSelect: (record: AuditRecord) => void;
+  enableZoom?: boolean;
+  className?: string;
+}
+```
+
+For services, include method documentation:
+
+```typescript
+/**
+ * Service for managing audit history data retrieval and caching.
+ * 
+ * @remarks
+ * Implements intelligent caching with 5-minute TTL and handles
+ * Dataverse API rate limiting automatically.
+ */
+export class AuditService {
+  /**
+   * Retrieves audit history for a specific entity record.
+   * 
+   * @param entityId - The GUID of the entity record
+   * @param filters - Optional filter criteria for the audit query
+   * @returns Promise resolving to array of audit records
+   * @throws {ApiError} When API request fails or rate limit is exceeded
+   * 
+   * @example
+   * ```typescript
+   * const audits = await auditService.getAuditHistory(
+   *   '12345678-1234-1234-1234-123456789012',
+   *   { dateFrom: new Date('2026-01-01') }
+   * );
+   * ```
+   */
+  async getAuditHistory(entityId: string, filters?: FilterOptions): Promise<AuditRecord[]> {
+    // Implementation
+  }
+}
+```
+
+**Required TSDoc tags:**
+- `@param` - Document all parameters with type and description
+- `@returns` - Describe what the function/method returns
+- `@throws` - Document exceptions that can be thrown
+- `@remarks` - Additional implementation notes or warnings
+- `@example` - Provide usage examples for complex components/methods
+- `@deprecated` - Mark deprecated code with migration path
 
 ### Dataverse Integration
 - Use Web API, not XRM/Client API (PCF best practice)
@@ -51,10 +136,13 @@ class AuditService {
 - Respect Dataverse API limits (no more than 6000 requests per 5 minutes per user)
 
 ### State Management
-- Use Redux Toolkit for state management
-- Slice structure: `/store/slices/auditSlice.ts`, `/store/slices/filterSlice.ts`, etc.
-- Use RTK Query for API calls and caching
-- Never mutate state directly - use reducers
+- Use MobX for reactive state management
+- Store structure: `/stores/AuditStore.ts`, `/stores/FilterStore.ts`, `/stores/RootStore.ts`
+- Mark observables with `@observable` or `makeObservable()`
+- Use `@action` for state mutations, `@computed` for derived values
+- Wrap React components with `observer()` to react to state changes
+- Use `runInAction()` for async updates after await
+- Never mutate observables outside actions in strict mode
 
 ### Localization
 - String resources in `/localization/` using `.resx` files (PCF standard)
