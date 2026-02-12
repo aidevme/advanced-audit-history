@@ -1,0 +1,1 @@
+export type XrmProperty = Record<string, string | number | object>;

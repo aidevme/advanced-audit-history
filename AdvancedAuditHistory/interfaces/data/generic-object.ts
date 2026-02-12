@@ -1,0 +1,1 @@
+export type Dynamic = Record<string, string | number | object | boolean>;
