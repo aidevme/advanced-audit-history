@@ -5,10 +5,13 @@
     <UniqueName>AdvancedAuditHistorySolution</UniqueName>
     <LocalizedNames>
       <!-- Localized Solution Name in language code -->
-      <LocalizedName description="AdvancedAuditHistorySolution" languagecode="1033" />
+      <LocalizedName description="Advanced Audit History Solution" languagecode="1033" />
     </LocalizedNames>
-    <Descriptions />
-    <Version>1.0</Version>
+    <Descriptions>
+      <!-- Description of Cds Solution in language code -->
+      <Description description="Enterprise-grade PowerApps Component Framework (PCF) control for Dynamics 365 and Power Platform that provides comprehensive audit history management with advanced filtering, timeline visualization, export capabilities, and compliance reporting features." languagecode="1033" />
+    </Descriptions>
+    <Version>1.0.0.10</Version>
     <!-- Solution Package Type: Unmanaged(0)/Managed(1)/Both(2)-->
     <Managed>2</Managed>
     <Publisher>

@@ -1,14 +1,14 @@
-import { Button, Dropdown, Option, OptionOnSelectData, SelectionEvents } from "@fluentui/react-components";
+import { Button, Toolbar, ToolbarButton, ToolbarDivider, Tooltip } from "@fluentui/react-components";
 import * as React from "react";
-import Select, { ActionMeta, MultiValue, SingleValue, StylesConfig } from 'react-select'
 import { Attribute } from "../../interfaces/attributes";
-import { useContext, useMemo, useState } from "react";
-import { ArrowClockwiseRegular, ArrowSortDownLinesRegular, ArrowSortUpLinesRegular, Calendar16Regular } from '@fluentui/react-icons';
+import { useContext, useState } from "react";
+import { ArrowClockwiseRegular, ArrowSortDownLinesRegular, ArrowSortUpLinesRegular, SettingsRegular, FilterRegular } from '@fluentui/react-icons';
 import { ControlContext } from "../../context/control-context";
 import { DatePicker } from 'antd';
-import * as dayjs from "dayjs";
-import { PickerLocale } from "antd/es/date-picker/generatePicker";
 import { isNullOrEmpty } from "../../utils/utils";
+import AttributesDropdown from "../dropdown/AttributesDropdown";
+import SettingsPanel from "../panel/SettingsPanel";
+import FiltersPanel, { AuditFilters } from "../panel/FiltersPanel";
 
 interface IProps {
     order: 'descending' | 'ascending'
@@ -19,35 +19,17 @@ interface IProps {
     onDateRangeSelected: (dateRange: DateRange) => void
 }
 
-interface AttributeOption {
-    value: string;
-    label: string;
-}
-
 export interface DateRange {
     startDate?: Date;
     endDate?: Date;
 }
 
-const searchBoxStyles: StylesConfig<AttributeOption> = {
-    container: (provided) => ({
-        ...provided,
-        width: '100%',
-    }),
-};
-
 const { RangePicker } = DatePicker;
 
 const Header = ({ order, attributes, onFieldsChanged, onDateRangeSelected, onRefresh, onAuditSortOrderChanged }: IProps) => {
     const { resources } = useContext(ControlContext);
-    
-    const onFieldSelected = (options: SingleValue<AttributeOption> | MultiValue<AttributeOption>, _: ActionMeta<AttributeOption>) => {
-        const selectedOptions = (options as MultiValue<AttributeOption>)?.map((o: {value: string, label: string}) => {
-            return o.value
-        });
-
-        onFieldsChanged(selectedOptions);
-    }
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
     const handleDateChange = (dateStrings: [string, string]) => {
         const startDate = isNullOrEmpty(dateStrings[0]) ? undefined : new Date(dateStrings[0]);
@@ -57,51 +39,102 @@ const Header = ({ order, attributes, onFieldsChanged, onDateRangeSelected, onRef
         onDateRangeSelected({ startDate, endDate })
     };
 
-    const sortedAttributes = useMemo(() => {
-        return attributes.filter((item) => item.displayName)
-        .sort((a, b) => a.displayName!.localeCompare(b.displayName!))
-        .map((attribute) => ({
-            value: attribute.logicalName,
-            label: attribute.displayName || attribute.logicalName,
-        }))
-    }, [attributes])
-
     const onOrderChanged = () => {
         onAuditSortOrderChanged(order == "ascending" ? "descending" : "ascending")
     }
 
+    const onFiltersClick = () => {
+        setIsFiltersOpen(true);
+    }
+
+    const onFiltersClose = () => {
+        setIsFiltersOpen(false);
+    }
+
+    const onApplyFilters = (filters: AuditFilters) => {
+        // TODO: Apply filters to audit data
+        console.log("Filters applied:", filters);
+    }
+
+    const onSettingsClick = () => {
+        setIsSettingsOpen(true);
+    }
+
+    const onSettingsClose = () => {
+        setIsSettingsOpen(false);
+    }
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', flexWrap: 'wrap', gap: 8}}>
-            <Select 
-                options={sortedAttributes}
-                isMulti={true}
-                isClearable={true}
-                closeMenuOnSelect={false}
-                onChange={onFieldSelected}
-                styles={searchBoxStyles}
-                placeholder={resources.getString("dropdown-placeholder")}
+            <Toolbar style={{ justifyContent: 'flex-end' }}>
+                <Tooltip 
+                    content="Apply advanced filters to narrow down audit records by user, action type, or specific changes. Quickly find the exact audit trail you need."
+                    relationship="description"
+                >
+                    <ToolbarButton 
+                        icon={<FilterRegular />}
+                        onClick={onFiltersClick}
+                    >
+                        {resources.getString("filters") || "Filters"}
+                    </ToolbarButton>
+                </Tooltip>
+                 <ToolbarDivider />
+                <Tooltip 
+                    content="Refresh audit history data to see the latest changes. This will reload all audit records based on your current filter settings."
+                    relationship="description"
+                >
+                    <ToolbarButton 
+                        icon={<ArrowClockwiseRegular />}
+                        onClick={onRefresh}
+                    >
+                        {resources.getString("refresh") || "Refresh"}
+                    </ToolbarButton>
+                </Tooltip>
+                <ToolbarDivider />
+                <Tooltip 
+                    content="Configure display options, enable auto-refresh, manage field visibility settings, and customize your audit history viewing experience."
+                    relationship="description"
+                >
+                    <ToolbarButton 
+                        icon={<SettingsRegular />}
+                        onClick={onSettingsClick}
+                    >
+                        {resources.getString("settings") || "Settings"}
+                    </ToolbarButton>
+                </Tooltip>
+            </Toolbar>
+            <AttributesDropdown
+                attributes={attributes}
+                placeholder={resources.getString("advanced-audit-history-dropdown-placeholder")}
+                onFieldsChanged={onFieldsChanged}
             />
-            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                <div style={{ display: 'flex', flexDirection: 'row', gap: 8 }}>
-                    <RangePicker
-                        allowClear
-                        placeholder={[resources.getString("start-date"), resources.getString("end-date")]}
-                        onChange={(_, dateStrings) => handleDateChange(dateStrings)}
-                    />
-                    <Button
-                        icon={ order == "ascending" ? <ArrowSortDownLinesRegular /> : <ArrowSortUpLinesRegular />} 
-                        onClick={onOrderChanged} 
-                        appearance="outline"
-                        >
-                        {
-                            order == "ascending" ? 
-                            resources.getString("sort-descending") 
-                            : resources.getString("sort-ascending")
-                        }
-                    </Button>
-                </div>
-                <Button onClick={onRefresh} icon={<ArrowClockwiseRegular />} />
+            <div style={{ display: 'flex', flexDirection: 'row', gap: 8 }}>
+                <RangePicker
+                    allowClear
+                    placeholder={[resources.getString("start-date"), resources.getString("end-date")]}
+                    onChange={(_, dateStrings) => handleDateChange(dateStrings)}
+                />
+                <Button
+                    icon={ order == "ascending" ? <ArrowSortDownLinesRegular /> : <ArrowSortUpLinesRegular />} 
+                    onClick={onOrderChanged} 
+                    appearance="outline"
+                    >
+                    {
+                        order == "ascending" ? 
+                        resources.getString("sort-descending") 
+                        : resources.getString("sort-ascending")
+                    }
+                </Button>
             </div>
+            <FiltersPanel 
+                isOpen={isFiltersOpen} 
+                onClose={onFiltersClose}
+                onApplyFilters={onApplyFilters}
+            />
+            <SettingsPanel 
+                isOpen={isSettingsOpen} 
+                onClose={onSettingsClose}
+            />
         </div>
     );
 }
