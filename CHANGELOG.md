@@ -1,3 +1,16 @@
+# 1.0.0 (2026-02-14)
+
+
+### Bug Fixes
+
+* **ci:** configure semantic-release for automated version management ([271b530](https://github.com/aidevme/advanced-audit-history/commit/271b530c47eff04767a659904f1b714557be9e4a))
+
+
+### Features
+
+* Add security validation, analytics dashboard, and enhanced UX ([6156865](https://github.com/aidevme/advanced-audit-history/commit/615686534c1e0e62d3c702a94977ac36a184f094))
+* Implement comprehensive UI components and enhanced metadata retrieval ([5bb42ed](https://github.com/aidevme/advanced-audit-history/commit/5bb42ed6f8c5054d48586042076e192da1bf2130))
+
 # Changelog
 
 All notable changes to the Advanced Audit History PCF Control will be documented in this file.
