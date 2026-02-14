@@ -1,0 +1,25 @@
+{
+  "recommendations": [
+    // ResX Editor Extensions (choose one)
+    "resxpress.resx-editor",           // ResXpress - Advanced ResX editor
+    "DominicVonk.vscode-resx",         // ResX Editor - Simple ResX editor
+    
+    // TypeScript & JavaScript
+    "dbaeumer.vscode-eslint",          // ESLint
+    "ms-vscode.vscode-typescript-next", // TypeScript Nightly
+    
+    // React Development
+    "dsznajder.es7-react-js-snippets", // ES7+ React snippets
+    
+    // Power Platform Development
+    "microsoft-IsvExpTools.powerplatform-vscode", // Power Platform Tools
+    
+    // Git & Version Control
+    "eamodio.gitlens",                 // GitLens
+    "GitKraken.gitkraken-authentication", // GitKraken
+    
+    // Code Quality
+    "editorconfig.editorconfig",       // EditorConfig
+    "streetsidesoftware.code-spell-checker" // Code Spell Checker
+  ]
+}

@@ -1,10 +1,11 @@
 import * as React from "react";
 
 import {
-  makeStyles,
   Caption1,
   Button,
   Subtitle2,
+  Tooltip,
+  mergeClasses,
 } from "@fluentui/react-components";
 import { ArrowUndo16Regular } from "@fluentui/react-icons";
 import {
@@ -12,29 +13,21 @@ import {
   CardHeader,
   CardPreview,
 } from "@fluentui/react-components";
-import { Audit } from "../../interfaces/audit";
+import { Audit, Attribute } from "../../interfaces";
 import { useContext } from "react";
 import { ControlContext } from "../../context/control-context";
 import { AuditAttributes } from "../table/table";
 import { useAudit } from "../../hooks/useAudit";
-import { Attribute } from "../../interfaces/attributes";
 import { useNavigation } from "../../hooks";
 import LookupField from "../lookup/lookup";
+import { useAuditCardStyles } from "./AuditCardStyles";
 
-const useStyles = makeStyles({
-  card: {
-    margin: "auto",
-    width: "720px",
-    maxWidth: "100%"
-  }
-});
-
-interface IProps {
+interface IAuditCardProps {
     audit: Audit;
 }
 
-export const AuditCard = ({ audit }: IProps) => {
-    const styles = useStyles();
+export const AuditCard = ({ audit }: IAuditCardProps) => {
+    const styles = useAuditCardStyles();
     const { context, formatting, resources } = useContext(ControlContext);
     const { restoreChanges } = useAudit(context);
     const { openConfirmationDialog } = useNavigation(context);
@@ -47,9 +40,21 @@ export const AuditCard = ({ audit }: IProps) => {
         } 
     }
 
+    // Determine card color based on operation type
+    const getCardColorClass = () => {
+        const operation = audit.operation?.toLowerCase() || '';
+        if (operation.includes('create')) return styles.cardCreate;
+        if (operation.includes('update')) return styles.cardUpdate;
+        return styles.cardDefault;
+    };
+
     return (
         <div style={{ width: '100%' }}>
-            <Card className={styles.card} style={{ width: '100%', padding: 24 }}>
+            <Card 
+                className={mergeClasses(styles.cardBase, getCardColorClass())} 
+                style={{ width: '100%', padding: 24 }}
+                appearance="filled"
+            >
                 <div style={{ 
                         display: 'flex', 
                         flexDirection: 'row',
@@ -65,23 +70,29 @@ export const AuditCard = ({ audit }: IProps) => {
                         }
                         description={
                             <div style={{ display: 'flex', flexDirection: 'row', gap: 4}}>
-                                <Caption1>
+                                <Caption1 className={styles.caption}>
                                     {formatting.formatDateShort(audit.timestamp, true)}
                                 </Caption1>
-                                <Caption1>·</Caption1>
+                                <Caption1 className={styles.caption}>·</Caption1>
                                 <LookupField item={audit.user} isAuditField={false} />
                             </div>
                         }
                     />
                     {
                         audit.attributes && audit.attributes.length > 0 &&  (
-                            <Button 
-                                appearance="outline" 
-                                icon={<ArrowUndo16Regular fontSize={16} />}
-                                onClick={() => onRestoreAll(audit.attributes)}
+                            <Tooltip
+                                content="Restore all field values from this audit entry to their previous state. This will update the current record with the old values."
+                                relationship="description"
+                                withArrow
                             >
-                                {resources.getString("restore-all")}
-                            </Button>
+                                <Button 
+                                    appearance="outline" 
+                                    icon={<ArrowUndo16Regular fontSize={16} />}
+                                    onClick={() => void onRestoreAll(audit.attributes)}
+                                >
+                                    {resources.getString("restore-all")}
+                                </Button>
+                            </Tooltip>
                         )
                     }
                 </div>

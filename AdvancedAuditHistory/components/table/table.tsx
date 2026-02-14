@@ -8,6 +8,7 @@ import {
   TableHeaderCell,
   TableCellLayout,
   Button,
+  Tooltip,
 } from "@fluentui/react-components";
 import { Attribute, Lookup } from "../../interfaces/attributes";
 import { ArrowUndo16Regular } from "@fluentui/react-icons";
@@ -17,11 +18,14 @@ import { ControlContext } from "../../context/control-context";
 import LookupField from "../lookup/lookup";
 import { useAudit } from "../../hooks/useAudit";
 import { useNavigation } from "../../hooks";
+import { getAttributeTypeName } from "../../enums/AttributeTypeCode";
 
 const columns = [
-{ key: "field" },
-{ key: "old-value" },
-{ key: "new-value" },
+{ key: "field", tooltip: "The name of the field that was changed in this audit record" },
+{ key: "field-type", tooltip: "The data type of the field (e.g., String, Lookup, DateTime, Money)" },
+{ key: "old-value", tooltip: "The previous value of the field before the change was made" },
+{ key: "new-value", tooltip: "The new value of the field after the change was made" },
+{ key: "action", tooltip: "Restore individual field values to their previous state from this audit entry" },
 ];
 
 interface IProps {
@@ -57,12 +61,18 @@ export const AuditAttributes = ({ attributes }: IProps) => {
                     <TableRow>
                     {
                         columns.map((column) => (
-                            <TableHeaderCell key={column.key}>
-                                <b>{resources.getString(column.key)}</b>
-                            </TableHeaderCell>
+                            <Tooltip
+                                key={column.key}
+                                content={column.tooltip}
+                                relationship="description"
+                                withArrow
+                            >
+                                <TableHeaderCell style={column.key === "action" ? { width: 30 } : undefined}>
+                                    <b>{resources.getString(column.key)}</b>
+                                </TableHeaderCell>
+                            </Tooltip>
                         ))
                     }
-                    <TableHeaderCell key={"actions"} style={{ width: 30}} />
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -71,6 +81,9 @@ export const AuditAttributes = ({ attributes }: IProps) => {
                             <TableRow key={index}>
                                 <TableCell>
                                     {attribute.displayName}
+                                </TableCell>
+                                <TableCell>
+                                    {getAttributeTypeName(attribute.attributeType as number | undefined)}
                                 </TableCell>
                                 <TableCell>
                                 <TableCellLayout>
@@ -89,11 +102,17 @@ export const AuditAttributes = ({ attributes }: IProps) => {
                                     }
                                 </TableCell>
                                 <TableCell style={{ width: 30 }}>
-                                    <Button 
-                                        appearance="transparent"
-                                        icon={<ArrowUndo16Regular fontSize={16} />}
-                                        onClick={() => onRestore(attribute)} 
-                                    />
+                                    <Tooltip
+                                        content={`Restore ${attribute.displayName} to its previous value (${typeof attribute.oldValue === 'object' ? 'lookup value' : attribute.oldValue ?? 'empty'})`}
+                                        relationship="description"
+                                        withArrow
+                                    >
+                                        <Button 
+                                            appearance="transparent"
+                                            icon={<ArrowUndo16Regular fontSize={16} />}
+                                            onClick={() => void onRestore(attribute)} 
+                                        />
+                                    </Tooltip>
                                 </TableCell>
                             </TableRow>
                         ))

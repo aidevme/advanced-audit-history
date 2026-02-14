@@ -41,6 +41,22 @@ const SettingsPanel: React.FC<ISettingsPanelProps> = ({ isOpen, onClose }) => {
     const [showFieldIcons, setShowFieldIcons] = React.useState(true);
     const [compactView, setCompactView] = React.useState(false);
 
+    const handleSave = () => {
+        // TODO: Implement settings save functionality
+        console.log("Settings saved:", {
+            showAuditDisabledFields,
+            enableAutoRefresh,
+            showFieldIcons,
+            compactView
+        });
+        onClose();
+    };
+
+    const handleCancel = () => {
+        // Reset settings or just close
+        onClose();
+    };
+
     return (
         <Drawer
             open={isOpen}
@@ -151,6 +167,18 @@ const SettingsPanel: React.FC<ISettingsPanelProps> = ({ isOpen, onClose }) => {
                                 Enterprise-grade audit tracking for Dynamics 365
                             </div>
                         </div>
+                    </div>
+
+                    <Divider />
+
+                    {/* Action Buttons */}
+                    <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 8 }}>
+                        <Button appearance="secondary" onClick={handleCancel}>
+                            Cancel
+                        </Button>
+                        <Button appearance="primary" onClick={handleSave}>
+                            Save
+                        </Button>
                     </div>
                 </div>
             </DrawerBody>

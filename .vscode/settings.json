@@ -1,0 +1,41 @@
+{
+    // ResX Editor Configuration
+    "workbench.editorAssociations": {
+        "*.resx": "default"
+    },
+    // File associations for ResX files
+    "files.associations": {
+        "*.resx": "xml"
+    },
+    // If using ResXpress extension (resxpress.resx-editor)
+    // Uncomment the following to set it as default editor for .resx files:
+    // "workbench.editorAssociations": {
+    //   "*.resx": "resxpress.resx-editor"
+    // },
+    // If using DominicVonk ResX Editor (DominicVonk.vscode-resx)
+    // Uncomment the following to set it as default editor for .resx files:
+    // "workbench.editorAssociations": {
+    //   "*.resx": "DominicVonk.vscode-resx"
+    // },
+    // TypeScript/JavaScript settings
+    "typescript.tsdk": "node_modules\\typescript\\lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    // Editor settings for better code quality
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
+    // Files to exclude from file explorer
+    "files.exclude": {
+        "**/node_modules": true,
+        "**/out": true,
+        "**/obj": true,
+        "**/.git": true
+    },
+    // Search exclusions
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/out": true,
+        "**/obj": true
+    }
+}

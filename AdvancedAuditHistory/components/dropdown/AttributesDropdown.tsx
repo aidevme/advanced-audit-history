@@ -1,22 +1,9 @@
-import { Dropdown, Option, OptionOnSelectData, SelectionEvents } from "@fluentui/react-components";
+import { Dropdown, Option, OptionOnSelectData, SelectionEvents, useId } from "@fluentui/react-components";
 import * as React from "react";
 import { useMemo, useState } from "react";
-import { Attribute } from "../../interfaces/attributes";
+import { Attribute } from "../../interfaces";
 import { AttributeTypeCode } from "../../enums/AttributeTypeCode";
-import {
-    CalendarLtrRegular,
-    NumberSymbolRegular,
-    SearchRegular,
-    TextAlignLeftRegular,
-    CheckboxCheckedRegular,
-    MoneyRegular,
-    OptionsRegular,
-    KeyRegular,
-    PersonRegular,
-    MailInboxRegular,
-    DocumentTextRegular,
-    QuestionCircleRegular
-} from "@fluentui/react-icons";
+import { Icons } from "../../tools/IconTools";
 
 /**
  * Get the appropriate icon for an attribute type
@@ -27,36 +14,36 @@ import {
 const getAttributeTypeIcon = (attributeType?: AttributeTypeCode): JSX.Element => {
     switch (attributeType) {
         case AttributeTypeCode.Boolean:
-            return <CheckboxCheckedRegular />;
+            return <Icons.Boolean />;
         case AttributeTypeCode.DateTime:
-            return <CalendarLtrRegular />;
+            return <Icons.Calendar />;
         case AttributeTypeCode.Decimal:
         case AttributeTypeCode.Double:
         case AttributeTypeCode.Integer:
         case AttributeTypeCode.BigInt:
-            return <NumberSymbolRegular />;
+            return <Icons.Number />;
         case AttributeTypeCode.Money:
-            return <MoneyRegular />;
+            return <Icons.Money />;
         case AttributeTypeCode.Lookup:
         case AttributeTypeCode.Customer:
         case AttributeTypeCode.Owner:
-            return <SearchRegular />;
+            return <Icons.Lookup />;
         case AttributeTypeCode.String:
-            return <TextAlignLeftRegular />;
+            return <Icons.Text />;
         case AttributeTypeCode.Memo:
-            return <DocumentTextRegular />;
+            return <Icons.Document />;
         case AttributeTypeCode.Picklist:
         case AttributeTypeCode.State:
         case AttributeTypeCode.Status:
-            return <OptionsRegular />;
+            return <Icons.Options />;
         case AttributeTypeCode.Uniqueidentifier:
-            return <KeyRegular />;
+            return <Icons.Key />;
         case AttributeTypeCode.PartyList:
-            return <PersonRegular />;
+            return <Icons.Person />;
         case AttributeTypeCode.EntityName:
-            return <MailInboxRegular />;
+            return <Icons.Mailbox />;
         default:
-            return <QuestionCircleRegular />;
+            return <Icons.Question />;
     }
 };
 
@@ -89,6 +76,7 @@ const AttributesDropdown: React.FC<IAttributesDropdownProps> = ({
     placeholder, 
     onFieldsChanged 
 }) => {
+    const dropdownId = useId('attributes-dropdown');
     const [selectedFields, setSelectedFields] = useState<string[]>([]);
     const [open, setOpen] = useState(false);
     
@@ -110,7 +98,9 @@ const AttributesDropdown: React.FC<IAttributesDropdownProps> = ({
 
     return (
         <Dropdown 
+            id={dropdownId}
             multiselect
+            clearable
             placeholder={placeholder}
             selectedOptions={selectedFields}
             onOptionSelect={onFieldSelected}
@@ -118,7 +108,7 @@ const AttributesDropdown: React.FC<IAttributesDropdownProps> = ({
             onOpenChange={onOpenChange}
         >
             {sortedAttributes.map((attribute) => {
-                const displayText = attribute.displayName || attribute.logicalName;
+                const displayText = attribute.displayName ?? attribute.logicalName;
                 const optionText = attribute.isAuditEnabled 
                     ? displayText 
                     : `${displayText} (Audit Disabled)`;
