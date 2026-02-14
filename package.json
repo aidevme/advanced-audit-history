@@ -16,6 +16,7 @@
     "rebuild": "pcf-scripts rebuild",
     "semantic-release": "semantic-release",
     "update-manifest-version": "node scripts/update-manifest-version.js",
+    "increment-solution-version": "node scripts/increment-solution-version.js",
     "start": "pcf-scripts start",
     "start:watch": "pcf-scripts start watch",
     "refreshTypes": "pcf-scripts refreshTypes",

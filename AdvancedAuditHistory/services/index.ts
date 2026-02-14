@@ -2,5 +2,5 @@
  * Services - Centralized exports for all service modules
  */
 
-export { AnalyticsService } from './AnalyticsService';
-export { SecurityService } from './SecurityService';
+export { AnalyticsService } from './AnalyticsService/AnalyticsService';
+export { SecurityService } from './SecurityService/SecurityService';

@@ -1,0 +1,161 @@
+name: "Build and Deploy PCF Solution"
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment URL"
+        required: true
+        type: string
+        default: "https://aidevme-dev.crm17.dynamics.com/"
+      increment_version:
+        description: "Increment solution version"
+        required: true
+        type: boolean
+        default: true
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy PCF Solution
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24.x"
+          cache: "npm"
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Build PCF Control
+        run: npm run build
+
+      - name: Verify PCF build
+        run: |
+          if (Test-Path "out/controls/AdvancedAuditHistory/bundle.js") {
+            Write-Host "✅ PCF Control built successfully"
+            $size = (Get-Item "out/controls/AdvancedAuditHistory/bundle.js").length
+            Write-Host "Bundle size: $([math]::Round($size/1MB, 2)) MB"
+          } else {
+            Write-Error "❌ PCF build failed - bundle.js not found"
+            exit 1
+          }
+        shell: pwsh
+
+      - name: Increment solution version
+        if: ${{ inputs.increment_version }}
+        id: version
+        run: node scripts/increment-solution-version.js
+
+      - name: Display version info
+        if: ${{ inputs.increment_version }}
+        run: |
+          echo "## 📦 Solution Version Updated" >> $env:GITHUB_STEP_SUMMARY
+          echo "" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **Previous Version:** ${{ steps.version.outputs.previous_version }}" >> $env:GITHUB_STEP_SUMMARY
+          echo "- **New Version:** ${{ steps.version.outputs.new_version }}" >> $env:GITHUB_STEP_SUMMARY
+        shell: pwsh
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup NuGet
+        uses: NuGet/setup-nuget@v2
+
+      - name: Restore NuGet packages
+        run: nuget restore Solution/AdvancedAuditHistorySolution/AdvancedAuditHistorySolution.cdsproj -PackagesDirectory packages
+        working-directory: ${{ github.workspace }}
+
+      - name: Build Solution
+        run: |
+          msbuild Solution/AdvancedAuditHistorySolution/AdvancedAuditHistorySolution.cdsproj `
+            /p:Configuration=Release `
+            /p:OutputPath=bin/Release `
+            /t:Build `
+            /restore
+        shell: pwsh
+
+      - name: Verify solution build
+        run: |
+          $solutionPath = "Solution/AdvancedAuditHistorySolution/bin/Release/AdvancedAuditHistorySolution.zip"
+          if (Test-Path $solutionPath) {
+            Write-Host "✅ Solution built successfully"
+            $size = (Get-Item $solutionPath).length
+            Write-Host "Solution size: $([math]::Round($size/1MB, 2)) MB"
+          } else {
+            Write-Error "❌ Solution build failed - .zip not found"
+            exit 1
+          }
+        shell: pwsh
+
+      - name: Upload solution artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: solution-${{ github.sha }}
+          path: Solution/AdvancedAuditHistorySolution/bin/Release/AdvancedAuditHistorySolution.zip
+          retention-days: 30
+
+      - name: Setup Power Platform CLI
+        uses: microsoft/powerplatform-actions/actions-install@v1
+
+      - name: Authenticate to Power Platform
+        uses: microsoft/powerplatform-actions/who-am-i@v1
+        with:
+          environment-url: ${{ inputs.environment }}
+          app-id: ${{ secrets.POWERPLATFORM_CLIENT_ID }}
+          client-secret: ${{ secrets.POWERPLATFORM_CLIENT_SECRET }}
+          tenant-id: ${{ secrets.POWERPLATFORM_TENANT_ID }}
+
+      - name: Import solution (Unmanaged)
+        uses: microsoft/powerplatform-actions/import-solution@v1
+        with:
+          environment-url: ${{ inputs.environment }}
+          app-id: ${{ secrets.POWERPLATFORM_CLIENT_ID }}
+          client-secret: ${{ secrets.POWERPLATFORM_CLIENT_SECRET }}
+          tenant-id: ${{ secrets.POWERPLATFORM_TENANT_ID }}
+          solution-file: Solution/AdvancedAuditHistorySolution/bin/Release/AdvancedAuditHistorySolution.zip
+          force-overwrite: true
+          publish-changes: true
+          skip-dependency-check: false
+          convert-to-managed: false
+
+      - name: Commit version change
+        if: ${{ inputs.increment_version }}
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add Solution/AdvancedAuditHistorySolution/src/Other/Solution.xml
+          git diff --staged --quiet || git commit -m "chore: increment solution version to ${{ steps.version.outputs.new_version }} [skip ci]"
+          git push
+        shell: pwsh
+
+      - name: Create deployment summary
+        if: always()
+        run: |
+          echo "## 🚀 Deployment Summary" >> $env:GITHUB_STEP_SUMMARY
+          echo "" >> $env:GITHUB_STEP_SUMMARY
+          echo "**Solution:** Advanced Audit History Solution" >> $env:GITHUB_STEP_SUMMARY
+          if ("${{ inputs.increment_version }}" -eq "true") {
+            echo "**Version:** ${{ steps.version.outputs.new_version }}" >> $env:GITHUB_STEP_SUMMARY
+          }
+          echo "**Environment:** ${{ inputs.environment }}" >> $env:GITHUB_STEP_SUMMARY
+          echo "**Type:** Unmanaged" >> $env:GITHUB_STEP_SUMMARY
+          echo "**Commit:** ${{ github.sha }}" >> $env:GITHUB_STEP_SUMMARY
+          echo "" >> $env:GITHUB_STEP_SUMMARY
+
+          if (Test-Path "Solution/AdvancedAuditHistorySolution/bin/Release/AdvancedAuditHistorySolution.zip") {
+            $size = (Get-Item "Solution/AdvancedAuditHistorySolution/bin/Release/AdvancedAuditHistorySolution.zip").length
+            echo "**Solution Size:** $([math]::Round($size/1MB, 2)) MB" >> $env:GITHUB_STEP_SUMMARY
+            echo "**Status:** ✅ Deployment completed" >> $env:GITHUB_STEP_SUMMARY
+          } else {
+            echo "**Status:** ❌ Deployment failed" >> $env:GITHUB_STEP_SUMMARY
+          }
+        shell: pwsh

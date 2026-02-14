@@ -2,14 +2,14 @@ import { Button, Toolbar, ToolbarButton, ToolbarDivider, Tooltip, Label, Menu, M
 import * as React from "react";
 import { Attribute } from "../../interfaces";
 import { useContext, useState } from "react";
-import { ArrowClockwiseRegular, ArrowSortDownLinesRegular, ArrowSortUpLinesRegular, SettingsRegular, FilterRegular, DismissCircleRegular, MaximizeRegular, GridRegular, CardUiRegular, TimelineRegular, Search20Regular, ChartMultipleRegular } from '@fluentui/react-icons';
+import { ArrowClockwiseRegular, ArrowSortDownLinesRegular, ArrowSortUpLinesRegular, SettingsRegular, FilterRegular, DismissCircleRegular, MaximizeRegular, GridRegular, CardUiRegular, TimelineRegular, ChartMultipleRegular, Search20Regular, Dismiss20Regular } from '@fluentui/react-icons';
 import { ControlContext } from "../../context/control-context";
 import AttributesDropdown from "../dropdown/AttributesDropdown";
 import SettingsPanel from "../panel/SettingsPanel";
 import FiltersPanel, { AuditFilters } from "../panel/FiltersPanel";
 import { ActiveFilters } from "../filters/ActiveFilters";
 
-interface IProps {
+interface IHeaderProps {
     order: 'descending' | 'ascending'
     attributes: Attribute[],
     onFieldsChanged: (attributes: string[]) => void,
@@ -28,7 +28,7 @@ export interface DateRange {
     endDate?: Date;
 }
 
-const Header = ({ order, attributes, onFieldsChanged, onDateRangeSelected, onRefresh, onAuditSortOrderChanged, onFiltersApplied, onViewTypeChanged, onSearchChanged, onShowAnalytics, users }: IProps) => {
+const Header = ({ order, attributes, onFieldsChanged, onDateRangeSelected, onRefresh, onAuditSortOrderChanged, onFiltersApplied, onViewTypeChanged, onSearchChanged, onShowAnalytics, users }: IHeaderProps) => {
     const { resources } = useContext(ControlContext);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isFiltersOpen, setIsFiltersOpen] = useState(false);
@@ -89,7 +89,7 @@ const Header = ({ order, attributes, onFieldsChanged, onDateRangeSelected, onRef
         }
 
         // Check if any filters remain
-        const hasRemainingFilters = Object.values(updatedFilters).some(val => 
+        const hasRemainingFilters = Object.values(updatedFilters).some(val =>
             val !== undefined && val !== null && (Array.isArray(val) ? val.length > 0 : true)
         );
 
@@ -129,8 +129,13 @@ const Header = ({ order, attributes, onFieldsChanged, onDateRangeSelected, onRef
         onSearchChanged(value);
     }
 
+    const handleClearSearch = () => {
+        setSearchTerm('');
+        onSearchChanged('');
+    }
+
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', flexWrap: 'wrap', gap: 8}}>
+        <div style={{ display: 'flex', flexDirection: 'column', flexWrap: 'wrap', gap: 8 }}>
             <Toolbar style={{ justifyContent: 'flex-start' }}>
                 <Input
                     type="search"
@@ -138,6 +143,14 @@ const Header = ({ order, attributes, onFieldsChanged, onDateRangeSelected, onRef
                     value={searchTerm}
                     onChange={handleSearchChange}
                     contentBefore={<Search20Regular />}
+                    contentAfter={
+                        searchTerm ? (
+                            <Dismiss20Regular
+                                onClick={handleClearSearch}
+                                style={{ cursor: 'pointer' }}
+                            />
+                        ) : null
+                    }
                     size="small"
                     style={{ width: 250 }}
                 />
@@ -149,13 +162,13 @@ const Header = ({ order, attributes, onFieldsChanged, onDateRangeSelected, onRef
 
                     <MenuPopover>
                         <MenuList>
-                            <MenuItem 
+                            <MenuItem
                                 icon={<CardUiRegular />}
                                 onClick={() => handleViewTypeChange('card')}
                             >
                                 Card
                             </MenuItem>
-                            <MenuItem 
+                            <MenuItem
                                 icon={<TimelineRegular />}
                                 onClick={() => handleViewTypeChange('card-timeline')}
                             >
@@ -165,13 +178,13 @@ const Header = ({ order, attributes, onFieldsChanged, onDateRangeSelected, onRef
                     </MenuPopover>
                 </Menu>
                 <ToolbarDivider />
-                <Tooltip 
+                <Tooltip
                     content="View comprehensive analytics dashboard with visual charts, trend analysis, and compliance monitoring. See audit activity over time, top changed fields, most active users, and change frequency patterns."
                     relationship="description"
                     withArrow
                 >
-                    <ToolbarButton 
-                        aria-label="Analytics Dashboard" 
+                    <ToolbarButton
+                        aria-label="Analytics Dashboard"
                         icon={<ChartMultipleRegular />}
                         onClick={onShowAnalytics}
                     >
@@ -179,12 +192,12 @@ const Header = ({ order, attributes, onFieldsChanged, onDateRangeSelected, onRef
                     </ToolbarButton>
                 </Tooltip>
                 <ToolbarDivider />
-                <Tooltip 
+                <Tooltip
                     content={`Sort audit records by date. Currently sorted in ${order} order. Click to toggle between ascending and descending order.`}
                     relationship="description"
                     withArrow
                 >
-                    <ToolbarButton 
+                    <ToolbarButton
                         icon={order == "ascending" ? <ArrowSortDownLinesRegular /> : <ArrowSortUpLinesRegular />}
                         onClick={onOrderChanged}
                     >
@@ -192,24 +205,24 @@ const Header = ({ order, attributes, onFieldsChanged, onDateRangeSelected, onRef
                     </ToolbarButton>
                 </Tooltip>
                 <ToolbarDivider />
-                <Tooltip 
+                <Tooltip
                     content="Apply advanced filters to narrow down audit records by user, action type, or specific changes. Quickly find the exact audit trail you need."
                     relationship="description"
                     withArrow
                 >
-                    <ToolbarButton 
+                    <ToolbarButton
                         icon={<FilterRegular />}
                         onClick={onFiltersClick}
                     >
                         {/* {resources.getString("filters") || "Filters"} */}
                     </ToolbarButton>
                 </Tooltip>
-                <Tooltip 
+                <Tooltip
                     content="Clear all active filters and reset to default view. This will remove user, attribute, action type, operation, and date range filters."
                     relationship="description"
                     withArrow
                 >
-                    <ToolbarButton 
+                    <ToolbarButton
                         icon={<DismissCircleRegular />}
                         onClick={onClearAllFilters}
                         disabled={!activeFilters}
@@ -217,13 +230,13 @@ const Header = ({ order, attributes, onFieldsChanged, onDateRangeSelected, onRef
                         {/* Clear All Filters */}
                     </ToolbarButton>
                 </Tooltip>
-                 <ToolbarDivider />
-                <Tooltip 
+                <ToolbarDivider />
+                <Tooltip
                     content="Refresh audit history data to see the latest changes. This will reload all audit records based on your current filter settings."
                     relationship="description"
                     withArrow
                 >
-                    <ToolbarButton 
+                    <ToolbarButton
                         icon={<ArrowClockwiseRegular />}
                         onClick={onRefresh}
                     >
@@ -231,12 +244,42 @@ const Header = ({ order, attributes, onFieldsChanged, onDateRangeSelected, onRef
                     </ToolbarButton>
                 </Tooltip>
                 <ToolbarDivider />
-                <Tooltip 
+
+                <Menu>
+                    <MenuTrigger>
+                        <ToolbarButton aria-label="Export" icon={<GridRegular />} />
+                    </MenuTrigger>
+
+                    <MenuPopover>
+                        <MenuList>
+                            <MenuItem
+                                icon={<CardUiRegular />}
+                                onClick={() => handleViewTypeChange('card')}
+                            >
+                                Export to Excel
+                            </MenuItem>
+                            <MenuItem
+                                icon={<TimelineRegular />}
+                                onClick={() => handleViewTypeChange('card-timeline')}
+                            >
+                                Export to CSV
+                            </MenuItem>
+                            <MenuItem
+                                icon={<TimelineRegular />}
+                                onClick={() => handleViewTypeChange('card-timeline')}
+                            >
+                                Export to PDF
+                            </MenuItem>
+                        </MenuList>
+                    </MenuPopover>
+                </Menu>
+                <ToolbarDivider />
+                <Tooltip
                     content="Configure display options, enable auto-refresh, manage field visibility settings, and customize your audit history viewing experience."
                     relationship="description"
                     withArrow
                 >
-                    <ToolbarButton 
+                    <ToolbarButton
                         icon={<SettingsRegular />}
                         onClick={onSettingsClick}
                     >
@@ -244,12 +287,12 @@ const Header = ({ order, attributes, onFieldsChanged, onDateRangeSelected, onRef
                     </ToolbarButton>
                 </Tooltip>
                 <ToolbarDivider />
-                <Tooltip 
+                <Tooltip
                     content="Maximize the audit history view to full screen for better visibility and focus. Press Escape to exit full screen mode."
                     relationship="description"
                     withArrow
                 >
-                    <ToolbarButton 
+                    <ToolbarButton
                         icon={<MaximizeRegular />}
                         onClick={onMaximizeClick}
                     >
@@ -258,22 +301,22 @@ const Header = ({ order, attributes, onFieldsChanged, onDateRangeSelected, onRef
                 </Tooltip>
             </Toolbar>
             {activeFilters && (
-                <ActiveFilters 
-                    activeFilters={activeFilters} 
-                    attributes={attributes} 
+                <ActiveFilters
+                    activeFilters={activeFilters}
+                    attributes={attributes}
                     onDismissFilter={onDismissFilter}
                 />
             )}
-            
-            <FiltersPanel 
-                isOpen={isFiltersOpen} 
+
+            <FiltersPanel
+                isOpen={isFiltersOpen}
                 onClose={onFiltersClose}
                 onApplyFilters={onApplyFilters}
                 attributes={attributes}
                 users={users}
             />
-            <SettingsPanel 
-                isOpen={isSettingsOpen} 
+            <SettingsPanel
+                isOpen={isSettingsOpen}
                 onClose={onSettingsClose}
             />
         </div>

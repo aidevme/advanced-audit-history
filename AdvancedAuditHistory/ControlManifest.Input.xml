@@ -1,28 +1,35 @@
-<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <manifest>
-  <control namespace="AIDEVME.CRM.Pcf" constructor="AdvancedAuditHistory" version="1.0.1" display-name-key="AdvancedAuditHistory" description-key="AdvancedAuditHistory description" control-type="virtual" >
-    
-    <external-service-usage enabled="false">    
+  <control namespace="AIDEVME.CRM.Pcf" constructor="AdvancedAuditHistory" version="1.0.1"
+    display-name-key="AdvancedAuditHistory" description-key="AdvancedAuditHistory description"
+    control-type="virtual">
+
+    <external-service-usage enabled="false">
     </external-service-usage>
-    <!-- property node identifies a specific, configurable piece of data that the control expects from CDS -->
-    <property 
-      name="advancedAuditHistoryBoundField" 
-      display-name-key="advancedAuditHistoryBoundField" 
-      description-key="Field where the pcf will be displayed" 
-      of-type="SingleLine.Text" 
-      usage="bound" 
-      required="true" 
+    <!-- property node identifies a specific, configurable piece of data that the control expects
+    from CDS -->
+    <property
+      name="advancedAuditHistoryBoundField"
+      display-name-key="advancedAuditHistoryBoundField"
+      description-key="Field where the pcf will be displayed"
+      of-type="SingleLine.Text"
+      usage="bound"
+      required="true"
     />
-  
+
     <resources>
-      <code path="index.ts" order="1"/>
+      <code path="index.ts" order="1" />
+      <!-- Add icon font from CDN -->
+      <css
+        path="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/11.0.0/css/fabric.min.css"
+        order="1" />
       <platform-library name="React" version="16.14.0" />
-      <platform-library name="Fluent" version="9.46.2" />      
-      <resx path="strings/AdvancedAuditHistory.1033.resx" version="1.0.0" />    
-    </resources>  
-    <feature-usage>      
+      <platform-library name="Fluent" version="9.46.2" />
+      <resx path="strings/AdvancedAuditHistory.1033.resx" version="1.0.0" />
+    </resources>
+    <feature-usage>
       <uses-feature name="Utility" required="true" />
       <uses-feature name="WebAPI" required="true" />
-    </feature-usage>   
+    </feature-usage>
   </control>
 </manifest>
