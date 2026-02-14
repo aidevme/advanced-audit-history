@@ -10,12 +10,32 @@ interface ExtendedContext extends ComponentFramework.Context<IInputs> {
 }
 
 /**
+ * Privilege definition from Dataverse security model
+ * 
+ * @remarks
+ * Represents a single privilege in the Dynamics 365/Dataverse security model.
+ * Privilege types include: Create, Read, Write, Delete, Append, AppendTo, Assign, Share
+ * Access levels: Basic (user-owned), Deep (business unit), Local (parent/child), Global (organization)
+ */
+export interface Privilege {
+    CanBeBasic: boolean;
+    CanBeDeep: boolean;
+    CanBeGlobal: boolean;
+    CanBeLocal: boolean;
+    ExtensionData?: unknown;
+    Name: string;
+    PrivilegeId: string;
+    PrivilegeType: string;
+}
+
+/**
  * Entity metadata response from Dataverse API
  */
 interface EntityMetadataResponse {
     IsAuditEnabled?: {
         Value: boolean;
     };
+    Privileges?: Privilege[];
 }
 
 /**

@@ -4,6 +4,46 @@ This directory contains GitHub Actions workflows for the Advanced Audit History 
 
 ## Available Workflows
 
+### Build PCF Control (`build-pcf.yml`)
+
+Automated build pipeline for the PCF control with artifact generation.
+
+**Triggers:**
+- Push to `main` branch
+- Pull requests to `main` branch
+- Manual workflow dispatch
+
+**Jobs:**
+
+1. **Build** (Windows, Node.js 24)
+   - Installs dependencies via `npm ci`
+   - Builds PCF control with `npm run build`
+   - Validates build output (bundle.js)
+   - Reports bundle size in MB
+   - Uploads build artifacts (30-day retention)
+   - Generates build summary
+
+2. **Lint** (Ubuntu, Node.js 24)
+   - Runs ESLint checks
+   - Continues on error (non-blocking)
+
+3. **Release** (Ubuntu, Node.js 24) - _Only on main branch pushes_
+   - Runs after successful build and lint
+   - Analyzes commits using conventional commits
+   - Determines version bump (major/minor/patch)
+   - Updates package.json, ControlManifest.Input.xml, CHANGELOG.md
+   - Creates Git tag and GitHub release
+   - Commits changes back to main
+
+**Build artifacts include:**
+- Compiled bundle.js
+- Control manifest files
+- Solution package files
+
+**Semantic Release:**
+
+The release job uses [semantic-release](https://semantic-release.gitbook.io/) for automated version management. See [documentation/semantic-release.md](../../documentation/semantic-release.md) for commit message conventions and versioning rules.
+
 ### CodeQL Analysis (`codeql.yml`)
 
 Automated security and code quality analysis using GitHub CodeQL.

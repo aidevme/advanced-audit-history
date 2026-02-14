@@ -6,10 +6,28 @@ import {
     Button,
     Label,
     Switch,
-    Divider
+    Divider,
+    TabList,
+    Tab,
+    makeStyles
 } from "@fluentui/react-components";
 import { Dismiss24Regular } from "@fluentui/react-icons";
 import * as React from "react";
+
+const useStyles = makeStyles({
+    tabContainer: {
+        display: 'flex',
+        gap: '16px',
+        height: '100%'
+    },
+    tabContent: {
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px',
+        paddingLeft: '16px'
+    }
+});
 
 interface ISettingsPanelProps {
     /** Whether the settings panel is open */
@@ -36,6 +54,8 @@ interface ISettingsPanelProps {
  * ```
  */
 const SettingsPanel: React.FC<ISettingsPanelProps> = ({ isOpen, onClose }) => {
+    const styles = useStyles();
+    const [selectedTab, setSelectedTab] = React.useState<string>("display");
     const [showAuditDisabledFields, setShowAuditDisabledFields] = React.useState(false);
     const [enableAutoRefresh, setEnableAutoRefresh] = React.useState(false);
     const [showFieldIcons, setShowFieldIcons] = React.useState(true);
@@ -80,105 +100,135 @@ const SettingsPanel: React.FC<ISettingsPanelProps> = ({ isOpen, onClose }) => {
             </DrawerHeader>
 
             <DrawerBody>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                    {/* Display Settings Section */}
-                    <div>
-                        <Label weight="semibold" style={{ fontSize: 16, marginBottom: 12, display: 'block' }}>
-                            Display Options
-                        </Label>
-                        
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div>
-                                    <Label>Show Field Type Icons</Label>
-                                    <div style={{ fontSize: 12, color: '#605E5C' }}>
-                                        Display icons indicating field types in dropdown
+                <div className={styles.tabContainer}>
+                    <TabList
+                        selectedValue={selectedTab}
+                        onTabSelect={(_, data) => setSelectedTab(data.value as string)}
+                        vertical
+                    >
+                        <Tab value="display">Display Options</Tab>
+                        <Tab value="refresh">Data Refresh</Tab>
+                        <Tab value="about">About</Tab>
+                    </TabList>
+
+                    <div className={styles.tabContent}>
+                        {selectedTab === "display" && (
+                            <>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div>
+                                            <Label>Show Field Type Icons</Label>
+                                            <div style={{ fontSize: 12, color: '#605E5C' }}>
+                                                Display icons indicating field types in dropdown
+                                            </div>
+                                        </div>
+                                        <Switch
+                                            checked={showFieldIcons}
+                                            onChange={(_, data) => setShowFieldIcons(data.checked)}
+                                        />
+                                    </div>
+
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div>
+                                            <Label>Compact View</Label>
+                                            <div style={{ fontSize: 12, color: '#605E5C' }}>
+                                                Reduce spacing for more compact display
+                                            </div>
+                                        </div>
+                                        <Switch
+                                            checked={compactView}
+                                            onChange={(_, data) => setCompactView(data.checked)}
+                                        />
+                                    </div>
+
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div>
+                                            <Label>Show Non-Auditable Fields</Label>
+                                            <div style={{ fontSize: 12, color: '#605E5C' }}>
+                                                Include fields with audit disabled in dropdown
+                                            </div>
+                                        </div>
+                                        <Switch
+                                            checked={showAuditDisabledFields}
+                                            onChange={(_, data) => setShowAuditDisabledFields(data.checked)}
+                                        />
                                     </div>
                                 </div>
-                                <Switch
-                                    checked={showFieldIcons}
-                                    onChange={(_, data) => setShowFieldIcons(data.checked)}
-                                />
-                            </div>
 
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div>
-                                    <Label>Compact View</Label>
-                                    <div style={{ fontSize: 12, color: '#605E5C' }}>
-                                        Reduce spacing for more compact display
+                                <Divider />
+
+                                <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 'auto' }}>
+                                    <Button appearance="secondary" onClick={handleCancel}>
+                                        Cancel
+                                    </Button>
+                                    <Button appearance="primary" onClick={handleSave}>
+                                        Save
+                                    </Button>
+                                </div>
+                            </>
+                        )}
+
+                        {selectedTab === "refresh" && (
+                            <>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <div>
+                                            <Label>Auto Refresh</Label>
+                                            <div style={{ fontSize: 12, color: '#605E5C' }}>
+                                                Automatically refresh audit data every 60 seconds
+                                            </div>
+                                        </div>
+                                        <Switch
+                                            checked={enableAutoRefresh}
+                                            onChange={(_, data) => setEnableAutoRefresh(data.checked)}
+                                        />
                                     </div>
                                 </div>
-                                <Switch
-                                    checked={compactView}
-                                    onChange={(_, data) => setCompactView(data.checked)}
-                                />
-                            </div>
 
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div>
-                                    <Label>Show Non-Auditable Fields</Label>
-                                    <div style={{ fontSize: 12, color: '#605E5C' }}>
-                                        Include fields with audit disabled in dropdown
+                                <Divider />
+
+                                <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 'auto' }}>
+                                    <Button appearance="secondary" onClick={handleCancel}>
+                                        Cancel
+                                    </Button>
+                                    <Button appearance="primary" onClick={handleSave}>
+                                        Save
+                                    </Button>
+                                </div>
+                            </>
+                        )}
+
+                        {selectedTab === "about" && (
+                            <>
+                                <div style={{ fontSize: 12, color: '#605E5C' }}>
+                                    <div style={{ fontSize: 16, fontWeight: 600, color: '#323130', marginBottom: 8 }}>
+                                        Advanced Audit History Control
+                                    </div>
+                                    <div style={{ marginBottom: 4 }}>Version 2.0.0</div>
+                                    <div style={{ marginTop: 16, lineHeight: 1.5 }}>
+                                        Enterprise-grade audit tracking for Dynamics 365 and Power Platform.
+                                    </div>
+                                    <div style={{ marginTop: 16 }}>
+                                        <Label weight="semibold">Features:</Label>
+                                        <ul style={{ marginTop: 8, paddingLeft: 20 }}>
+                                            <li>Comprehensive audit history visualization</li>
+                                            <li>Advanced filtering and search capabilities</li>
+                                            <li>Analytics dashboard with trend analysis</li>
+                                            <li>Multiple view types (Card, Timeline)</li>
+                                            <li>Security validation and access control</li>
+                                        </ul>
                                     </div>
                                 </div>
-                                <Switch
-                                    checked={showAuditDisabledFields}
-                                    onChange={(_, data) => setShowAuditDisabledFields(data.checked)}
-                                />
-                            </div>
-                        </div>
-                    </div>
 
-                    <Divider />
+                                <Divider />
 
-                    {/* Data Refresh Settings Section */}
-                    <div>
-                        <Label weight="semibold" style={{ fontSize: 16, marginBottom: 12, display: 'block' }}>
-                            Data Refresh
-                        </Label>
-                        
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div>
-                                    <Label>Auto Refresh</Label>
-                                    <div style={{ fontSize: 12, color: '#605E5C' }}>
-                                        Automatically refresh audit data every 60 seconds
-                                    </div>
+                                <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 'auto' }}>
+                                    <Button appearance="primary" onClick={onClose}>
+                                        Close
+                                    </Button>
                                 </div>
-                                <Switch
-                                    checked={enableAutoRefresh}
-                                    onChange={(_, data) => setEnableAutoRefresh(data.checked)}
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <Divider />
-
-                    {/* About Section */}
-                    <div>
-                        <Label weight="semibold" style={{ fontSize: 16, marginBottom: 12, display: 'block' }}>
-                            About
-                        </Label>
-                        <div style={{ fontSize: 12, color: '#605E5C' }}>
-                            <div>Advanced Audit History Control</div>
-                            <div>Version 2.0.0</div>
-                            <div style={{ marginTop: 8 }}>
-                                Enterprise-grade audit tracking for Dynamics 365
-                            </div>
-                        </div>
-                    </div>
-
-                    <Divider />
-
-                    {/* Action Buttons */}
-                    <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 8 }}>
-                        <Button appearance="secondary" onClick={handleCancel}>
-                            Cancel
-                        </Button>
-                        <Button appearance="primary" onClick={handleSave}>
-                            Save
-                        </Button>
+                            </>
+                        )}
                     </div>
                 </div>
             </DrawerBody>

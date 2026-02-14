@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest>
-  <control namespace="AIDEVME.CRM.Pcf" constructor="AdvancedAuditHistory" version="0.0.32" display-name-key="AdvancedAuditHistory" description-key="AdvancedAuditHistory description" control-type="virtual" >
+  <control namespace="AIDEVME.CRM.Pcf" constructor="AdvancedAuditHistory" version="0.0.33" display-name-key="AdvancedAuditHistory" description-key="AdvancedAuditHistory description" control-type="virtual" >
     
     <external-service-usage enabled="false">    
     </external-service-usage>

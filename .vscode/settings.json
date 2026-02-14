@@ -37,5 +37,11 @@
         "**/node_modules": true,
         "**/out": true,
         "**/obj": true
-    }
+    },
+    // GitHub Copilot & MCP Server Configuration
+    "github.copilot.enable": {
+        "*": true
+    },
+    "chat.agent.enabled": true,
+    "chat.experimental.mcp.enabled": true
 }
