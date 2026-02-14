@@ -1,0 +1,92 @@
+version: 2
+updates:
+  # NPM dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: Europe/Berlin
+
+    # Grouping strategy - reduces PR noise
+    groups:
+      fluentui:
+        patterns:
+          - "@fluentui/*"
+        update-types:
+          - "minor"
+          - "patch"
+      development:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+      semantic-release:
+        patterns:
+          - "@semantic-release/*"
+        update-types:
+          - "minor"
+          - "patch"
+
+    # Version constraints and ignores
+    ignore:
+      # Don't upgrade React - PCF requires 16.14 exactly
+      - dependency-name: "react"
+        update-types:
+          ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "react-dom"
+        update-types:
+          ["version-update:semver-major", "version-update:semver-minor"]
+
+      # Only minor/patch for TypeScript - major versions need testing
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+
+      # Webpack needs careful testing with PCF
+      - dependency-name: "webpack"
+        update-types: ["version-update:semver-major"]
+
+      # PCF scripts should be manually controlled
+      - dependency-name: "pcf-scripts"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "pcf-start"
+        update-types: ["version-update:semver-major"]
+
+    # Limit open PRs to avoid spam
+    open-pull-requests-limit: 5
+
+    # PR configuration
+    labels:
+      - "dependencies"
+      - "automated"
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+
+    # Rebase strategy for clean history
+    rebase-strategy: "auto"
+
+    # Target main branch
+    target-branch: "main"
+
+  # GitHub Actions - less frequent updates
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "09:00"
+      timezone: Europe/Berlin
+
+    labels:
+      - "ci/cd"
+      - "dependencies"
+      - "automated"
+
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+
+    open-pull-requests-limit: 3

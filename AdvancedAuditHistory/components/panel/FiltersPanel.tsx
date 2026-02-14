@@ -214,6 +214,7 @@ const FiltersPanel: React.FC<IFiltersPanelProps> = ({ isOpen, onClose, onApplyFi
                                     placeholder="Select start date"
                                     value={startDate}
                                     onSelectDate={(date) => setStartDate(date || null)}
+                                    positioning={{ position: "below", align: "start" }}
                                 />
                             </Field>
                             <Field label="End Date">
@@ -221,6 +222,7 @@ const FiltersPanel: React.FC<IFiltersPanelProps> = ({ isOpen, onClose, onApplyFi
                                     placeholder="Select end date"
                                     value={endDate}
                                     onSelectDate={(date) => setEndDate(date || null)}
+                                    positioning={{ position: "below", align: "start" }}
                                 />
                             </Field>
                         </div>
