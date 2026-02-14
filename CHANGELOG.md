@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/aidevme/advanced-audit-history/compare/v1.0.0...v1.0.1) (2026-02-14)
+
+
+### Bug Fixes
+
+* **ui:** resolve DatePicker positioning and add Dependabot configuration ([2f11970](https://github.com/aidevme/advanced-audit-history/commit/2f11970c1103f226468d3afa9938e09c846e5a75))
+
 # 1.0.0 (2026-02-14)
 
 
