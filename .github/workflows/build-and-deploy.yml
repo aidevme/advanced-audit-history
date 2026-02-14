@@ -78,7 +78,8 @@ jobs:
         run: |
           msbuild Solution/AdvancedAuditHistorySolution/AdvancedAuditHistorySolution.cdsproj `
             /p:Configuration=Release `
-            /t:Build
+            /t:Build `
+            /restore
         shell: pwsh
 
       - name: Verify solution build
