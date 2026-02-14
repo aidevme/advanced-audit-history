@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { useMemo, useState } from 'react';
 import { Audit } from '../../interfaces';
-import { 
-    Card, 
-    CardHeader, 
-    Text, 
+import {
+    Card,
+    CardHeader,
+    Text,
     Button,
     Spinner,
     makeStyles,
@@ -16,7 +16,7 @@ import { TopFieldsChart } from './TopFieldsChart';
 import { ActiveUsersChart } from './ActiveUsersChart';
 import { ChangeFrequencyHeatmap } from './ChangeFrequencyHeatmap';
 import { TrendAnalysisChart } from './TrendAnalysisChart';
-import { AnalyticsService } from '../../services/AnalyticsService';
+import { AnalyticsService } from '../../services/AnalyticsService/AnalyticsService';
 import { DateRange } from '../../types/DateRange';
 
 const useStyles = makeStyles({
@@ -132,7 +132,7 @@ export const AuditAnalyticsDashboard: React.FC<IAuditAnalyticsDashboardProps> = 
                         header={<Text weight="semibold">Audit Activity Over Time</Text>}
                         description={<Text size={200}>Track changes across different time periods</Text>}
                     />
-                    <AuditActivityChart 
+                    <AuditActivityChart
                         data={analyticsData.activityTimeline}
                         metric={selectedMetric}
                         onMetricChange={setSelectedMetric}

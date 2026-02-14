@@ -1,5 +1,5 @@
-import { Audit } from '../interfaces';
-import { DateRange } from '../types/DateRange';
+import { Audit } from '../../interfaces';
+import { DateRange } from '../../types/DateRange';
 import {
     AnalyticsData,
     ActivityTimelineData,
@@ -7,7 +7,7 @@ import {
     ActiveUserData,
     HeatmapData,
     TrendData
-} from '../types/AnalyticsTypes';
+} from '../../types/AnalyticsTypes';
 
 /**
  * AnalyticsService - Service for analyzing and aggregating audit data
@@ -33,7 +33,7 @@ export class AnalyticsService {
      * ```
      */
     static analyzeAudits(audits: Audit[], dateRange?: DateRange): AnalyticsData {
-        const filteredAudits = dateRange 
+        const filteredAudits = dateRange
             ? this.filterByDateRange(audits, dateRange)
             : audits;
 
