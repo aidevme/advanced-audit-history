@@ -85,7 +85,16 @@ export interface AuditFilters {
  * />
  * ```
  */
-const FiltersPanel: React.FC<IFiltersPanelProps> = ({ isOpen, onClose, onApplyFilters, attributes, users = [], availableActionTypes = [], earliestAuditDate, latestAuditDate }) => {
+const FiltersPanel: React.FC<IFiltersPanelProps> = ({
+    isOpen,
+    onClose,
+    onApplyFilters,
+    attributes,
+    users = [],
+    availableActionTypes = [],
+    earliestAuditDate,
+    latestAuditDate
+}) => {
     const startDateId = useId('start-date');
     const endDateId = useId('end-date');
 
@@ -95,8 +104,8 @@ const FiltersPanel: React.FC<IFiltersPanelProps> = ({ isOpen, onClose, onApplyFi
     const [includeSystemChanges, setIncludeSystemChanges] = useState<boolean>(true);
     const [selectedAttributes, setSelectedAttributes] = useState<string[]>([]);
     const [minChangesCount, setMinChangesCount] = useState<string>("");
-    const [startDate, setStartDate] = useState<Date | null>(earliestAuditDate || null);
-    const [endDate, setEndDate] = useState<Date | null>(latestAuditDate || null);
+    const [startDate, setStartDate] = useState<Date | null>(earliestAuditDate ?? null);
+    const [endDate, setEndDate] = useState<Date | null>(latestAuditDate ?? null);
 
     // Action types available in Dynamics 365 audit
     const actionTypes = [
@@ -126,8 +135,8 @@ const FiltersPanel: React.FC<IFiltersPanelProps> = ({ isOpen, onClose, onApplyFi
             includeSystemChanges,
             attributeNames: selectedAttributes.length > 0 ? selectedAttributes : undefined,
             minChangesCount: minChangesCount ? parseInt(minChangesCount, 10) : undefined,
-            startDate: startDate || undefined,
-            endDate: endDate || undefined
+            startDate: startDate ?? undefined,
+            endDate: endDate ?? undefined
         };
 
         if (onApplyFilters) {
@@ -261,7 +270,7 @@ const FiltersPanel: React.FC<IFiltersPanelProps> = ({ isOpen, onClose, onApplyFi
                                     minDate={earliestAuditDate}
                                     maxDate={latestAuditDate}
                                     value={startDate}
-                                    onSelectDate={(date) => setStartDate(date || null)}
+                                    onSelectDate={(date) => setStartDate(date ?? null)}
                                     inlinePopup={true}
                                 />
                             </Field>
@@ -272,7 +281,7 @@ const FiltersPanel: React.FC<IFiltersPanelProps> = ({ isOpen, onClose, onApplyFi
                                     minDate={earliestAuditDate}
                                     maxDate={latestAuditDate}
                                     value={endDate}
-                                    onSelectDate={(date) => setEndDate(date || null)}
+                                    onSelectDate={(date) => setEndDate(date ?? null)}
                                     inlinePopup={true}
                                 />
                             </Field>
@@ -347,7 +356,7 @@ const FiltersPanel: React.FC<IFiltersPanelProps> = ({ isOpen, onClose, onApplyFi
                                 <strong>Selected: </strong>
                                 {selectedAttributes.map(logicalName => {
                                     const attr = attributes.find(a => a.logicalName === logicalName);
-                                    return attr?.displayName || logicalName;
+                                    return attr?.displayName ?? logicalName;
                                 }).join(', ')}
                             </div>
                         )}

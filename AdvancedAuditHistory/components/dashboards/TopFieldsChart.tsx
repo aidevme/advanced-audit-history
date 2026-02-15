@@ -29,7 +29,7 @@ export const TopFieldsChart: React.FC<ITopFieldsChartProps> = ({ data }) => {
                         className="topFieldsChart-row"
                     >
                         <Text size={200} className="topFieldsChart-fieldName">
-                            {field.displayName || field.fieldName}
+                            {field.displayName ?? field.fieldName}
                         </Text>
                         <div className="topFieldsChart-barContainer">
                             <div 

@@ -65,7 +65,7 @@ export class AnalyticsService {
         audits.forEach(audit => {
             const date = new Date(audit.timestamp);
             const dateKey = date.toISOString().split('T')[0];
-            dailyCounts.set(dateKey, (dailyCounts.get(dateKey) || 0) + 1);
+            dailyCounts.set(dateKey, (dailyCounts.get(dateKey) ?? 0) + 1);
         });
 
         const timeline: ActivityTimelineData[] = [];
@@ -89,7 +89,7 @@ export class AnalyticsService {
 
         audits.forEach(audit => {
             audit.attributes.forEach(attr => {
-                const count = fieldCounts.get(attr.logicalName) || 0;
+                const count = fieldCounts.get(attr.logicalName) ?? 0;
                 fieldCounts.set(attr.logicalName, count + 1);
                 if (attr.displayName) {
                     fieldNames.set(attr.logicalName, attr.displayName);
@@ -132,7 +132,7 @@ export class AnalyticsService {
                 }
             } else {
                 userCounts.set(userId, {
-                    name: audit.user.name || 'Unknown User',
+                    name: audit.user.name ?? 'Unknown User',
                     count: 1,
                     lastActivity: auditDate
                 });
@@ -166,7 +166,7 @@ export class AnalyticsService {
             const dayOfWeek = date.getDay();
             const hour = date.getHours();
             const key = `${dayOfWeek}-${hour}`;
-            heatmapMap.set(key, (heatmapMap.get(key) || 0) + 1);
+            heatmapMap.set(key, (heatmapMap.get(key) ?? 0) + 1);
         });
 
         const heatmapData: HeatmapData[] = [];
@@ -237,7 +237,7 @@ export class AnalyticsService {
 
         audits.forEach(audit => {
             if (!audit.user?.id) return;
-            const dates = userActivity.get(audit.user.id) || [];
+            const dates = userActivity.get(audit.user.id) ?? [];
             dates.push(new Date(audit.timestamp));
             userActivity.set(audit.user.id, dates);
         });

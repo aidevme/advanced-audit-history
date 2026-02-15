@@ -46,7 +46,7 @@ export const ActiveFilters: React.FC<IActiveFiltersProps> = ({ activeFilters, at
                             dismissible
                             dismissIcon={{ onClick: () => onDismissFilter('attribute', logicalName) }}
                         >
-                            {attr?.displayName || logicalName}
+                            {attr?.displayName ?? logicalName}
                         </Tag>
                     );
                 })
