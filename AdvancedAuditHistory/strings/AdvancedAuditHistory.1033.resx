@@ -22,8 +22,10 @@
     <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
         <value>[base64 mime encoded serialized .NET Framework object]</value>
     </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing"
+  mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework
+  object]</value>
         <comment>This is a comment</comment>
     </data>
 
@@ -59,46 +61,47 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
           <xsd:element name="metadata">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
               </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string"/>
-              <xsd:attribute name="type" type="xsd:string"/>
-              <xsd:attribute name="mimetype" type="xsd:string"/>
-              <xsd:attribute ref="xml:space"/>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="assembly">
             <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string"/>
-              <xsd:attribute name="name" type="xsd:string"/>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="data">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
-              <xsd:attribute ref="xml:space"/>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required"/>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
             </xsd:complexType>
           </xsd:element>
         </xsd:choice>
@@ -112,10 +115,12 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0,
+      Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0,
+      Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="advanced-audit-history-dropdown-placeholder" xml:space="preserve">
     <value>Choose fields to filter the audit history</value>
@@ -125,15 +130,15 @@
     <value>No audit history found</value>
     <comment/>
   </data>
-  <data name="field" xml:space="preserve">
+  <data name="advanced-audit-history-table-cell-field" xml:space="preserve">
     <value>Field</value>
     <comment/>
   </data>
-  <data name="old-value" xml:space="preserve">
+  <data name="advanced-audit-history-table-cell-old-value" xml:space="preserve">
     <value>Old Value</value>
     <comment/>
   </data>
-  <data name="new-value" xml:space="preserve">
+  <data name="advanced-audit-history-table-cell-new-value" xml:space="preserve">
     <value>New Value</value>
     <comment/>
   </data>
@@ -172,5 +177,125 @@
   <data name="end-date" xml:space="preserve">
     <value>End date</value>
     <comment/>
+  </data>
+  <data name="advanced-audit-history-table-cell-field-type" xml:space="preserve">
+    <value>Field Type</value>
+    <comment/>
+  </data>
+  <data name="advanced-audit-history-table-cell-action" xml:space="preserve">
+    <value>Action</value>
+    <comment/>
+  </data>
+  <data name="advanced-audit-history-toolbar-search-tooltip-text" xml:space="preserve">
+    <value>Search and filter audit records by user names, field names, field values, or operation details. Results update in real-time as you type. Click the X icon to clear the search.</value>
+    <comment>Tooltip for the search input in the toolbar</comment>
+  </data>
+  <data name="advanced-audit-history-toolbar-viewtype-tooltip-text" xml:space="preserve">
+    <value>Switch between different view layouts for audit records. Card view displays detailed information in expandable cards, while Card-Timeline view adds chronological ordering with visual timeline markers.</value>
+    <comment>Tooltip for the view type selector in the toolbar</comment>
+  </data>
+  <data name="advanced-audit-history-toolbar-analytics-tooltip-text" xml:space="preserve">
+    <value>View comprehensive analytics dashboard with visual charts, trend analysis, and compliance monitoring. See audit activity over time, top changed fields, most active users, and change frequency patterns.</value>
+    <comment>Tooltip for the analytics dashboard button in the toolbar</comment>
+  </data>
+  <data name="advanced-audit-history-toolbar-filters-tooltip-text" xml:space="preserve">
+    <value>Apply advanced filters to narrow down audit records by user, action type, or specific changes. Quickly find the exact audit trail you need.</value>
+    <comment>Tooltip for the filters button in the toolbar</comment>
+  </data>
+  <data name="advanced-audit-history-toolbar-clear-filters-tooltip-text" xml:space="preserve">
+    <value>Clear all active filters and reset to default view. This will remove user, attribute, action type, operation, and date range filters.</value>
+    <comment>Tooltip for the clear all filters button in the toolbar</comment>
+  </data>
+  <data name="advanced-audit-history-toolbar-refresh-tooltip-text" xml:space="preserve">
+    <value>Refresh audit history data to see the latest changes. This will reload all audit records based on your current filter settings.</value>
+    <comment>Tooltip for the refresh button in the toolbar</comment>
+  </data>
+  <data name="advanced-audit-history-toolbar-export-tooltip-text" xml:space="preserve">
+    <value>Export audit history data to different file formats. Choose Excel for detailed spreadsheets with formatting, CSV for raw data import, or PDF for printable reports and documentation.</value>
+    <comment>Tooltip for the export menu in the toolbar</comment>
+  </data>
+  <data name="advanced-audit-history-toolbar-settings-tooltip-text" xml:space="preserve">
+    <value>Configure display options, enable auto-refresh, manage field visibility settings, and customize your audit history viewing experience.</value>
+    <comment>Tooltip for the settings button in the toolbar</comment>
+  </data>
+  <data name="advanced-audit-history-toolbar-maximize-tooltip-text" xml:space="preserve">
+    <value>Maximize the audit history view to full screen for better visibility and focus. Press Escape to exit full screen mode.</value>
+    <comment>Tooltip for the maximize button in the toolbar</comment>
+  </data>
+  <data name="advanced-audit-history-toolbar-search-placeholder-text" xml:space="preserve">
+    <value>Search audit records...</value>
+    <comment>Placeholder text for the search input in the toolbar</comment>
+  </data>
+  <data name="advanced-audit-history-toolbar-sort-ascending-tooltip-text" xml:space="preserve">
+    <value>Sort audit records by date. Currently sorted in ascending order. Click to toggle between ascending and descending order.</value>
+    <comment>Tooltip for the sort button when in ascending order</comment>
+  </data>
+  <data name="advanced-audit-history-toolbar-sort-descending-tooltip-text" xml:space="preserve">
+    <value>Sort audit records by date. Currently sorted in descending order. Click to toggle between ascending and descending order.</value>
+    <comment>Tooltip for the sort button when in descending order</comment>
+  </data>
+  <data name="advanced-audit-history-toolbar-viewtype-aria-label" xml:space="preserve">
+    <value>View Type</value>
+    <comment>ARIA label for the view type selector button in the toolbar</comment>
+  </data>
+  <data name="advanced-audit-history-toolbar-analytics-aria-label" xml:space="preserve">
+    <value>Analytics Dashboard</value>
+    <comment>ARIA label for the analytics dashboard button in the toolbar</comment>
+  </data>
+  <data name="advanced-audit-history-toolbar-export-aria-label" xml:space="preserve">
+    <value>Export</value>
+    <comment>ARIA label for the export menu button in the toolbar</comment>
+  </data>
+  <data name="advanced-audit-history-error-panel-no-permission-title" xml:space="preserve">
+    <value>Access Denied</value>
+    <comment>Title for the error panel when user does not have permission to view audit history</comment>
+  </data>
+  <data name="advanced-audit-history-error-panel-no-permission-message" xml:space="preserve">
+    <value>You do not have permission to view audit history. Please contact your system administrator to request access.</value>
+    <comment>Message for the error panel when user does not have permission to view audit history</comment>
+  </data>
+  <data name="advanced-audit-history-error-panel-audit-not-enabled-title" xml:space="preserve">
+    <value>Audit Not Enabled</value>
+    <comment>Title for the error panel when audit logging is not enabled for the entity</comment>
+  </data>
+  <data name="advanced-audit-history-error-panel-audit-not-enabled-message" xml:space="preserve">
+    <value>Audit logging is not enabled for this entity. Please enable auditing in the entity settings to track changes.</value>
+    <comment>Message for the error panel when audit logging is not enabled for the entity</comment>
+  </data>
+  <data name="advanced-audit-history-error-panel-no-audit-data-title" xml:space="preserve">
+    <value>No Audit Data Available</value>
+    <comment>Title for the error panel when no audit data is available for the entity</comment>
+  </data>
+  <data name="advanced-audit-history-error-panel-no-audit-data-message" xml:space="preserve">
+    <value>No audit history records found for this entity. Changes may not have been tracked yet, or audit logging might not be enabled for this entity.</value>
+    <comment>Message for the error panel when no audit data is available for the entity</comment>
+  </data>
+  <data name="advanced-audit-history-error-panel-default-title" xml:space="preserve">
+    <value>Information</value>
+    <comment>Default title for the error panel when no specific error type matches</comment>
+  </data>
+  <data name="advanced-audit-history-error-panel-default-message" xml:space="preserve">
+    <value>No additional information available.</value>
+    <comment>Default message for the error panel when no specific error type matches</comment>
+  </data>
+  <data name="advanced-audit-history-table-cell-field-tooltip" xml:space="preserve">
+    <value>The name of the field that was changed in this audit record</value>
+    <comment>Tooltip for the Field column header in the audit attributes table</comment>
+  </data>
+  <data name="advanced-audit-history-table-cell-field-type-tooltip" xml:space="preserve">
+    <value>The data type of the field (e.g., String, Lookup, DateTime, Money)</value>
+    <comment>Tooltip for the Field Type column header in the audit attributes table</comment>
+  </data>
+  <data name="advanced-audit-history-table-cell-old-value-tooltip" xml:space="preserve">
+    <value>The previous value of the field before the change was made</value>
+    <comment>Tooltip for the Old Value column header in the audit attributes table</comment>
+  </data>
+  <data name="advanced-audit-history-table-cell-new-value-tooltip" xml:space="preserve">
+    <value>The new value of the field after the change was made</value>
+    <comment>Tooltip for the New Value column header in the audit attributes table</comment>
+  </data>
+  <data name="advanced-audit-history-table-cell-action-tooltip" xml:space="preserve">
+    <value>Restore individual field values to their previous state from this audit entry</value>
+    <comment>Tooltip for the Action column header in the audit attributes table</comment>
   </data>
 </root>

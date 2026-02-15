@@ -14,7 +14,7 @@ import {
 import { Dismiss24Regular } from "@fluentui/react-icons";
 import * as React from "react";
 
-const useStyles = makeStyles({
+const useSettingsPanelStyles = makeStyles({
     tabContainer: {
         display: 'flex',
         gap: '16px',
@@ -54,9 +54,9 @@ interface ISettingsPanelProps {
  * ```
  */
 const SettingsPanel: React.FC<ISettingsPanelProps> = ({ isOpen, onClose }) => {
-    const styles = useStyles();
+    const styles = useSettingsPanelStyles();
     const [selectedTab, setSelectedTab] = React.useState<string>("display");
-    const [showAuditDisabledFields, setShowAuditDisabledFields] = React.useState(false);
+    const [showAuditDisabledFields, setShowAuditDisabledFields] = React.useState(true);
     const [enableAutoRefresh, setEnableAutoRefresh] = React.useState(false);
     const [showFieldIcons, setShowFieldIcons] = React.useState(true);
     const [compactView, setCompactView] = React.useState(false);
@@ -108,6 +108,7 @@ const SettingsPanel: React.FC<ISettingsPanelProps> = ({ isOpen, onClose }) => {
                     >
                         <Tab value="display">Display Options</Tab>
                         <Tab value="refresh">Data Refresh</Tab>
+                        <Tab value="features">Features</Tab>
                         <Tab value="about">About</Tab>
                     </TabList>
 
@@ -193,6 +194,44 @@ const SettingsPanel: React.FC<ISettingsPanelProps> = ({ isOpen, onClose }) => {
                                     </Button>
                                     <Button appearance="primary" onClick={handleSave}>
                                         Save
+                                    </Button>
+                                </div>
+                            </>
+                        )}
+
+                        {selectedTab === "features" && (
+                            <>
+                                <div style={{ fontSize: 12, color: '#605E5C' }}>
+                                    <div style={{ fontSize: 16, fontWeight: 600, color: '#323130', marginBottom: 8 }}>
+                                        Available Features
+                                    </div>
+                                    <div style={{ marginTop: 16 }}>
+                                        <Label weight="semibold">Core Capabilities:</Label>
+                                        <ul style={{ marginTop: 8, paddingLeft: 20, lineHeight: 1.8 }}>
+                                            <li><strong>Comprehensive Audit Tracking</strong> - View detailed audit history with field-level changes</li>
+                                            <li><strong>Advanced Search & Filtering</strong> - Filter by users, action types, date ranges, and field changes</li>
+                                            <li><strong>Multiple View Types</strong> - Switch between Card and Timeline views</li>
+                                            <li><strong>Export Capabilities</strong> - Export audit data to Excel, CSV, or PDF formats</li>
+                                            <li><strong>Security Validation</strong> - Built-in permission checks and audit enablement verification</li>
+                                            <li><strong>Localization Support</strong> - Available in 20+ languages</li>
+                                        </ul>
+                                    </div>
+                                    <div style={{ marginTop: 16 }}>
+                                        <Label weight="semibold">Coming Soon:</Label>
+                                        <ul style={{ marginTop: 8, paddingLeft: 20, lineHeight: 1.8 }}>
+                                            <li><strong>Analytics Dashboard</strong> - Visualize audit trends and patterns</li>
+                                            <li><strong>Power Automate Integration</strong> - Trigger flows based on audit events</li>
+                                            <li><strong>Power BI Integration</strong> - Deep analytics and reporting</li>
+                                            <li><strong>Bulk Restore</strong> - Restore multiple field values from audit history</li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <Divider />
+
+                                <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', marginTop: 'auto' }}>
+                                    <Button appearance="primary" onClick={onClose}>
+                                        Close
                                     </Button>
                                 </div>
                             </>

@@ -1,3 +1,4 @@
+// AdvancedAuditHistory\services\SecurityService\SecurityService.ts
 import { IInputs } from "../../generated/ManifestTypes";
 
 /**
@@ -88,23 +89,23 @@ export class SecurityService {
     ): Promise<EntityPrivilege[]> {
         try {
             const userId = context.userSettings.userId.replace(/{|}/g, '');
-            
+
             // Step 1: Get all role IDs for the user
             const userRolesResponse = await context.webAPI.retrieveMultipleRecords(
                 'systemuserroles',
                 `?$filter=systemuserid eq ${userId}&$select=roleid`
             );
-            
+
             if (!userRolesResponse.entities || userRolesResponse.entities.length === 0) {
                 return [];
             }
-            
+
             const roleIds = userRolesResponse.entities.map(entity => entity.roleid);
-            
+
             // Step 2: Get entity metadata to find available privileges for this entity
             const extendedContext = context as ExtendedContext;
             const clientUrl = extendedContext.page?.getClientUrl?.() ?? '';
-            
+
             const metadataResponse = await fetch(
                 `${clientUrl}/api/data/v9.2/EntityDefinitions(LogicalName='${entityLogicalName}')?$select=Privileges`,
                 {
@@ -116,36 +117,36 @@ export class SecurityService {
                     }
                 }
             );
-            
+
             if (!metadataResponse.ok) {
                 console.error(`Entity metadata query failed: ${metadataResponse.status}`);
                 return [];
             }
-            
+
             const metadataData = await metadataResponse.json() as EntityMetadataResponse;
             const entityPrivileges = metadataData.Privileges || [];
-            
+
             if (entityPrivileges.length === 0) {
                 return [];
             }
-            
+
             // Step 3: Get role privileges for the user's roles and this entity's privileges
             const privilegeIds = entityPrivileges.map(p => p.PrivilegeId);
             const privilegeFilter = privilegeIds.map(id => `privilegeid eq ${id}`).join(' or ');
             const roleFilter = roleIds.map(id => `roleid eq ${id}`).join(' or ');
-            
+
             const rolePrivilegesResponse = await context.webAPI.retrieveMultipleRecords(
                 'roleprivileges',
                 `?$filter=(${roleFilter}) and (${privilegeFilter})&$select=privilegeid,privilegedepthmask`
             );
-            
+
             if (!rolePrivilegesResponse.entities || rolePrivilegesResponse.entities.length === 0) {
                 return [];
             }
-            
+
             // Step 4: Build the result by combining privilege info with depth masks
             const privilegeMap = new Map<string, number>();
-            
+
             // Aggregate depth masks across all roles (use bitwise OR to get highest access)
             rolePrivilegesResponse.entities.forEach(rolePriv => {
                 const privId = rolePriv.privilegeid;
@@ -153,16 +154,16 @@ export class SecurityService {
                 const currentMask = privilegeMap.get(privId) || 0;
                 privilegeMap.set(privId, currentMask | depthMask);
             });
-            
+
             // Map privileges to result format
             const result: EntityPrivilege[] = [];
-            
+
             entityPrivileges.forEach(priv => {
                 const depthMask = privilegeMap.get(priv.PrivilegeId);
                 if (depthMask !== undefined && depthMask > 0) {
                     const depth = this.getDepthFromMask(depthMask, priv);
                     const privilegeType = this.getPrivilegeTypeFromName(priv.Name);
-                    
+
                     result.push({
                         privilegeName: priv.Name,
                         privilegeId: priv.PrivilegeId,
@@ -179,14 +180,14 @@ export class SecurityService {
                     });
                 }
             });
-            
+
             return result;
         } catch (error) {
             console.error('Failed to retrieve user privileges for entity:', error);
             return [];
         }
     }
-    
+
     /**
      * Determine access depth from privilege depth mask
      * 
@@ -212,7 +213,7 @@ export class SecurityService {
         if ((depthMask & 1) && privilege.CanBeBasic) return 'Basic';
         return 'None';
     }
-    
+
     /**
      * Extract privilege type from privilege name
      * 
@@ -249,21 +250,21 @@ export class SecurityService {
     ): Promise<boolean> {
         try {
             const userId = context.userSettings.userId.replace(/{|}/g, '');
-            
+
             // Query user's security roles (systemuserroles is an intersect entity)
             // We cannot expand navigation properties on intersect entities
             const response = await context.webAPI.retrieveMultipleRecords(
                 'systemuserroles',
                 `?$filter=systemuserid eq ${userId}&$select=roleid`
             );
-            
+
             // If user has any roles, they likely have audit access
             // For more granular check, we'd need to query roleprivileges
             // but that requires additional API calls
-            
+
             // Basic check: user has at least one active role
             const hasRoles = response.entities && response.entities.length > 0;
-            
+
             return hasRoles;
         } catch (error) {
             console.error('Permission check failed:', error);
@@ -297,7 +298,7 @@ export class SecurityService {
         try {
             const extendedContext = context as ExtendedContext;
             const clientUrl = extendedContext.page?.getClientUrl?.() ?? '';
-            
+
             const response = await fetch(
                 `${clientUrl}/api/data/v9.2/EntityDefinitions(LogicalName='${entityLogicalName}')?$select=IsAuditEnabled`,
                 {
@@ -309,14 +310,14 @@ export class SecurityService {
                     }
                 }
             );
-            
+
             if (!response.ok) {
                 console.error(`Entity metadata query failed: ${response.status} ${response.statusText}`);
                 return false;
             }
-            
+
             const data = await response.json() as EntityMetadataResponse;
-            
+
             // IsAuditEnabled is a BooleanManagedProperty with a Value property
             return data.IsAuditEnabled?.Value ?? false;
         } catch (error) {

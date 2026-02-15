@@ -1,10 +1,10 @@
 import * as React from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import { Audit } from '../../interfaces';
 import { AuditCard } from '../cards/AuditCard';
-import { Caption1 } from '@fluentui/react-components';
-import { useContext } from 'react';
-import { ControlContext } from '../../context/control-context';
 import { getOperationIcon } from '../../tools/IconTools';
+import { Caption1 } from '@fluentui/react-components';
+import { ControlContext } from '../../context/control-context';
 
 interface ITimelineViewProps {
     audits: Audit[];
@@ -26,60 +26,161 @@ interface ITimelineViewProps {
  */
 export const TimelineView: React.FC<ITimelineViewProps> = ({ audits }) => {
     const { formatting } = useContext(ControlContext);
+    const [visibleCards, setVisibleCards] = useState<Set<string>>(new Set());
+    const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
     
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        const cardId = entry.target.getAttribute('data-card-id');
+                        if (cardId) {
+                            setVisibleCards((prev) => new Set(prev).add(cardId));
+                        }
+                    }
+                });
+            },
+            {
+                threshold: 0.1,
+                rootMargin: '50px'
+            }
+        );
+
+        cardRefs.current.forEach((element) => {
+            if (element) {
+                observer.observe(element);
+            }
+        });
+
+        return () => {
+            observer.disconnect();
+        };
+    }, [audits]);
+
     if (!audits || audits.length === 0) {
         return null;
     }
     
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', padding: '20px 2px', gap: 0, backgroundColor: '#fafafa' }}>
+        <>
+            <style>
+                {`
+                    @keyframes slideFromLeft {
+                        from {
+                            opacity: 0;
+                            transform: translateX(-100px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateX(0);
+                        }
+                    }
+                    
+                    @keyframes slideFromRight {
+                        from {
+                            opacity: 0;
+                            transform: translateX(100px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateX(0);
+                        }
+                    }
+                `}
+            </style>
+            <div 
+                className="main-container"
+                style={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    padding: '20px 2px', 
+                    gap: 0, 
+                    backgroundColor: '#fafafa' 
+                }}
+            >
             {audits.map((audit, index) => {
                 const isLeft = index % 2 === 0;
+                const isVisible = visibleCards.has(audit.id);
                 
                 return (
                     <div 
-                        key={audit.id} 
+                        key={audit.id}
+                        className="cards-container"
                         style={{ 
                             position: 'relative',
                             display: 'flex',
                             flexDirection: 'row',
                             alignItems: 'flex-start',
-                            justifyContent: 'center',
                             minHeight: '200px',
                             marginBottom: index < audits.length - 1 ? '40px' : '0'
                         }}
                     >
-                        {/* Left Side - Card or Spacer */}
-                        {isLeft ? (
-                            <div style={{ 
-                                flex: 1, 
-                                paddingRight: '40px',
+                        {/* Left Card Sub-container */}
+                        <div 
+                            className="leftcard"
+                            style={{ 
+                                flex: 1,
+                                paddingRight: '20px',
                                 display: 'flex',
                                 justifyContent: 'flex-end'
-                            }}>
-                                <div style={{ width: '100%', maxWidth: '500px' }}>
+                            }}
+                        >
+                            {isLeft ? (
+                                <div 
+                                    ref={(el) => {
+                                        if (el) cardRefs.current.set(audit.id, el);
+                                    }}
+                                    data-card-id={audit.id}
+                                    style={{ 
+                                        width: '100%', 
+                                        maxWidth: '500px',
+                                        animation: isVisible ? 'slideFromLeft 0.6s ease-out forwards' : 'none',
+                                        opacity: isVisible ? undefined : 0,
+                                        transform: isVisible ? undefined : 'translateX(-100px)',
+                                        transition: 'opacity 0.6s ease-out, transform 0.6s ease-out'
+                                    }}>
                                     <AuditCard audit={audit} />
                                 </div>
-                            </div>
-                        ) : (
-                            <div style={{ flex: 1 }} />
-                        )}
+                            ) : (
+                                <div style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'flex-start', 
+                                    justifyContent: 'flex-end',
+                                    paddingRight: '20px',
+                                    paddingTop: '10px',
+                                    height: '40px',
+                                    animation: isVisible ? 'slideFromLeft 0.6s ease-out forwards' : 'none',
+                                    opacity: isVisible ? undefined : 0,
+                                    transform: isVisible ? undefined : 'translateX(-100px)',
+                                    transition: 'opacity 0.6s ease-out, transform 0.6s ease-out'
+                                }}>
+                                    <Caption1 style={{ fontWeight: 600, color: '#605E5C', fontSize: 16 }}>
+                                        {formatting.formatDateShort(audit.timestamp, true)}
+                                    </Caption1>
+                                </div>
+                            )}
+                        </div>
                         
-                        {/* Timeline Center */}
-                        <div style={{ 
-                            display: 'flex', 
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            position: 'relative',
-                            flexShrink: 0,
-                            width: '40px'
-                        }}>
+                        {/* Timeline Center Sub-container - Fixed 150px */}
+                        <div 
+                            className="timelinecenter"
+                            style={{ 
+                                display: 'flex', 
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                position: 'relative',
+                                flexShrink: 0,
+                                alignSelf: 'stretch',
+                                width: '150px'
+                            }}
+                        >
                             {/* Timeline Line - connects to next badge */}
                             {index < audits.length - 1 && (
                                 <div style={{
                                     position: 'absolute',
                                     top: '20px',
-                                    left: '19px',
+                                    left: '74px',
                                     width: '2px',
                                     height: 'calc(100% + 60px)',
                                     backgroundColor: '#0078d4',
@@ -106,25 +207,11 @@ export const TimelineView: React.FC<ITimelineViewProps> = ({ audits }) => {
                                 {getOperationIcon(audit.operation)}
                             </div>
                             
-                            {/* Timestamp - positioned on opposite side of card */}
-                            <div style={{
-                                position: 'absolute',
-                                top: '10px',
-                                [isLeft ? 'left' : 'right']: '50px',
-                                whiteSpace: 'nowrap',
-                                textAlign: isLeft ? 'left' : 'right',
-                                zIndex: 5
-                            }}>
-                                <Caption1 style={{ fontWeight: 600 }}>
-                                    {formatting.formatDateShort(audit.timestamp, true)}
-                                </Caption1>
-                            </div>
-                            
                             {/* Arrow pointing to card */}
                             <div style={{
                                 position: 'absolute',
                                 top: '18px',
-                                [isLeft ? 'right' : 'left']: '40px',
+                                [isLeft ? 'right' : 'left']: '55px',
                                 width: 0,
                                 height: 0,
                                 borderTop: '8px solid transparent',
@@ -134,25 +221,56 @@ export const TimelineView: React.FC<ITimelineViewProps> = ({ audits }) => {
                             }} />
                         </div>
                         
-                        {/* Right Side - Card or Spacer */}
-                        {!isLeft ? (
-                            <div style={{ 
-                                flex: 1, 
-                                paddingLeft: '40px',
+                        {/* Right Card Sub-container */}
+                        <div 
+                            className="rightcard"
+                            style={{ 
+                                flex: 1,
+                                paddingLeft: '20px',
                                 display: 'flex',
                                 justifyContent: 'flex-start'
-                            }}>
-                                <div style={{ width: '100%', maxWidth: '500px' }}>
+                            }}
+                        >
+                            {!isLeft ? (
+                                <div 
+                                    ref={(el) => {
+                                        if (el) cardRefs.current.set(audit.id, el);
+                                    }}
+                                    data-card-id={audit.id}
+                                    style={{ 
+                                        width: '100%', 
+                                        maxWidth: '500px',
+                                        animation: isVisible ? 'slideFromRight 0.6s ease-out forwards' : 'none',
+                                        opacity: isVisible ? undefined : 0,
+                                        transform: isVisible ? undefined : 'translateX(100px)',
+                                        transition: 'opacity 0.6s ease-out, transform 0.6s ease-out'
+                                    }}>
                                     <AuditCard audit={audit} />
                                 </div>
-                            </div>
-                        ) : (
-                            <div style={{ flex: 1 }} />
-                        )}
+                            ) : (
+                                <div style={{ 
+                                    display: 'flex', 
+                                    alignItems: 'flex-start', 
+                                    justifyContent: 'flex-start',
+                                    paddingLeft: '20px',
+                                    paddingTop: '10px',
+                                    height: '40px',
+                                    animation: isVisible ? 'slideFromRight 0.6s ease-out forwards' : 'none',
+                                    opacity: isVisible ? undefined : 0,
+                                    transform: isVisible ? undefined : 'translateX(100px)',
+                                    transition: 'opacity 0.6s ease-out, transform 0.6s ease-out'
+                                }}>
+                                    <Caption1 style={{ fontWeight: 600, color: '#605E5C', fontSize: 16 }}>
+                                        {formatting.formatDateShort(audit.timestamp, true)}
+                                    </Caption1>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 );
             })}
         </div>
+        </>
     );
 };
 

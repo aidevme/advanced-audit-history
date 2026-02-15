@@ -1,17 +1,18 @@
 import * as React from "react";
 
 import {
-  Caption1,
-  Button,
-  Subtitle2,
-  Tooltip,
-  mergeClasses,
+    Caption1,
+    Button,
+    Subtitle2,
+    Tooltip,
+    mergeClasses,
+    tokens,
 } from "@fluentui/react-components";
 import { ArrowUndo16Regular } from "@fluentui/react-icons";
 import {
-  Card,
-  CardHeader,
-  CardPreview,
+    Card,
+    CardHeader,
+    CardPreview,
 } from "@fluentui/react-components";
 import { Audit, Attribute } from "../../interfaces";
 import { useContext } from "react";
@@ -34,10 +35,10 @@ export const AuditCard = ({ audit }: IAuditCardProps) => {
 
     const onRestoreAll = async (attributes: Attribute[]) => {
         const isConfirmed = await openConfirmationDialog()
-        
-        if(isConfirmed) {
+
+        if (isConfirmed) {
             await restoreChanges(attributes)
-        } 
+        }
     }
 
     // Determine card color based on operation type
@@ -48,19 +49,27 @@ export const AuditCard = ({ audit }: IAuditCardProps) => {
         return styles.cardDefault;
     };
 
+    // Get button background color based on operation type (matches card background)
+    const getButtonColor = () => {
+        const operation = audit.operation?.toLowerCase() || '';
+        if (operation.includes('create')) return tokens.colorPaletteGreenBackground2;
+        if (operation.includes('update')) return tokens.colorPaletteYellowBackground2;
+        return tokens.colorPaletteBerryBackground2;
+    };
+
     return (
         <div style={{ width: '100%' }}>
-            <Card 
-                className={mergeClasses(styles.cardBase, getCardColorClass())} 
+            <Card
+                className={mergeClasses(styles.cardBase, getCardColorClass())}
                 style={{ width: '100%', padding: 24 }}
                 appearance="filled"
             >
-                <div style={{ 
-                        display: 'flex', 
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        alignItems: 'center'
-                    }}
+                <div style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                }}
                 >
                     <CardHeader
                         header={
@@ -69,7 +78,7 @@ export const AuditCard = ({ audit }: IAuditCardProps) => {
                             </Subtitle2>
                         }
                         description={
-                            <div style={{ display: 'flex', flexDirection: 'row', gap: 4}}>
+                            <div style={{ display: 'flex', flexDirection: 'row', gap: 4 }}>
                                 <Caption1 className={styles.caption}>
                                     {formatting.formatDateShort(audit.timestamp, true)}
                                 </Caption1>
@@ -79,16 +88,21 @@ export const AuditCard = ({ audit }: IAuditCardProps) => {
                         }
                     />
                     {
-                        audit.attributes && audit.attributes.length > 0 &&  (
+                        audit.attributes && audit.attributes.length > 0 && (
                             <Tooltip
                                 content="Restore all field values from this audit entry to their previous state. This will update the current record with the old values."
                                 relationship="description"
                                 withArrow
                             >
-                                <Button 
-                                    appearance="outline" 
+                                <Button
+                                    appearance="primary"
                                     icon={<ArrowUndo16Regular fontSize={16} />}
                                     onClick={() => void onRestoreAll(audit.attributes)}
+                                    style={{ 
+                                        backgroundColor: getButtonColor(),
+                                        borderColor: tokens.colorNeutralStroke1,
+                                        color: '#000000'
+                                    }}
                                 >
                                     {resources.getString("restore-all")}
                                 </Button>

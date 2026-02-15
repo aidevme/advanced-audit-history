@@ -5,6 +5,8 @@ import { Attribute } from "../../interfaces";
 import { AttributeTypeCode } from "../../enums/AttributeTypeCode";
 import { Icons } from "../../tools/IconTools";
 
+import { TextFieldIcon } from '@fluentui/react-icons-mdl2';
+
 /**
  * Get the appropriate icon for an attribute type
  * 
@@ -106,13 +108,15 @@ const AttributesDropdown: React.FC<IAttributesDropdownProps> = ({
             onOptionSelect={onFieldSelected}
             open={open}
             onOpenChange={onOpenChange}
+            style={{ width: '100%' }}
         >
             {sortedAttributes.map((attribute) => {
                 const displayText = attribute.displayName ?? attribute.logicalName;
                 const optionText = attribute.isAuditEnabled 
                     ? displayText 
                     : `${displayText} (Audit Disabled)`;
-                const icon = getAttributeTypeIcon(attribute.attributeType);
+                // const icon = getAttributeTypeIcon(attribute.attributeType);
+                const icon = <TextFieldIcon style={{ color: '#672367' }} />;
                 
                 return (
                     <Option 

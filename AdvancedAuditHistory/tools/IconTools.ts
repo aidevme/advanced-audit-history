@@ -7,8 +7,8 @@
  */
 
 import * as React from 'react';
-import { 
-    ArrowUndo16Regular, 
+import {
+    ArrowUndo16Regular,
     Edit16Regular,
     Add16Regular,
     Delete16Regular,
@@ -39,6 +39,8 @@ import {
     ChartMultipleRegular
 } from '@fluentui/react-icons';
 
+import { FilterIcon, ClearFilterIcon } from '@fluentui/react-icons-mdl2';
+
 /**
  * Exported icon components for common operations
  */
@@ -48,24 +50,24 @@ export const Icons = {
     Edit: Edit16Regular,
     Add: Add16Regular,
     Delete: Delete16Regular,
-    
+
     // Toolbar Icons
     Refresh: ArrowClockwiseRegular,
     SortAsc: ArrowSortDownLinesRegular,
     SortDesc: ArrowSortUpLinesRegular,
     Settings: SettingsRegular,
-    Filter: FilterRegular,
-    ClearAll: DismissCircleRegular,
+    FilterIcon: FilterIcon,
+    ClearFilterIcon: ClearFilterIcon,
     Dismiss: Dismiss12Regular,
     Maximize: MaximizeRegular,
     Search: Search20Regular,
-    
+
     // View Type Icons
     Grid: GridRegular,
     Card: CardUiRegular,
     Timeline: TimelineRegular,
     Chart: ChartMultipleRegular,
-    
+
     // Attribute Type Icons
     Calendar: CalendarLtrRegular,
     Number: NumberSymbolRegular,
@@ -78,7 +80,11 @@ export const Icons = {
     Person: PersonRegular,
     Mailbox: MailInboxRegular,
     Document: DocumentTextRegular,
-    Question: QuestionCircleRegular
+    Question: QuestionCircleRegular,
+
+
+
+
 } as const;
 
 /**
@@ -123,30 +129,30 @@ export const getOperationIcon = (operation?: string): React.ReactElement => {
     if (!operation) {
         return React.createElement(Edit16Regular);
     }
-    
+
     const lowerOp = operation.toLowerCase();
-    
+
     // Check for restore operation
     if (lowerOp.includes('restore')) {
         return React.createElement(ArrowUndo16Regular);
     }
-    
+
     // Check for create operation
     if (lowerOp.includes('create') || lowerOp.includes('add')) {
         return React.createElement(Add16Regular);
     }
-    
+
     // Check for delete operation
     if (lowerOp.includes('delete') || lowerOp.includes('remove')) {
         return React.createElement(Delete16Regular);
     }
-    
+
     // Check exact matches in operation map
     const IconComponent = operationIconMap[lowerOp];
     if (IconComponent) {
         return React.createElement(IconComponent);
     }
-    
+
     // Default to Edit icon
     return React.createElement(Edit16Regular);
 };
@@ -168,21 +174,21 @@ export const getOperationIconComponent = (operation?: string): typeof Edit16Regu
     if (!operation) {
         return Edit16Regular;
     }
-    
+
     const lowerOp = operation.toLowerCase();
-    
+
     if (lowerOp.includes('restore')) {
         return ArrowUndo16Regular;
     }
-    
+
     if (lowerOp.includes('create') || lowerOp.includes('add')) {
         return Add16Regular;
     }
-    
+
     if (lowerOp.includes('delete') || lowerOp.includes('remove')) {
         return Delete16Regular;
     }
-    
+
     return operationIconMap[lowerOp] || Edit16Regular;
 };
 
@@ -201,20 +207,20 @@ export const getOperationColor = (operation?: string): string => {
     if (!operation) {
         return '#0078d4'; // Default blue
     }
-    
+
     const lowerOp = operation.toLowerCase();
-    
+
     if (lowerOp.includes('create') || lowerOp.includes('add')) {
         return '#107c10'; // Green
     }
-    
+
     if (lowerOp.includes('delete') || lowerOp.includes('remove')) {
         return '#d13438'; // Red
     }
-    
+
     if (lowerOp.includes('restore')) {
         return '#8764b8'; // Purple
     }
-    
+
     return '#0078d4'; // Blue for update and default
 };

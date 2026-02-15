@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ImportExportXml version="9.1.0.643" SolutionPackageVersion="9.1" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ImportExportXml version="9.1.0.643" SolutionPackageVersion="9.1" languagecode="1033"
+  generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <SolutionManifest>
     <!-- Unique Name of Cds Solution-->
     <UniqueName>AdvancedAuditHistorySolution</UniqueName>
@@ -9,9 +10,11 @@
     </LocalizedNames>
     <Descriptions>
       <!-- Description of Cds Solution in language code -->
-      <Description description="Enterprise-grade PowerApps Component Framework (PCF) control for Dynamics 365 and Power Platform that provides comprehensive audit history management with advanced filtering, timeline visualization, export capabilities, and compliance reporting features." languagecode="1033" />
+      <Description
+        description="Enterprise-grade PowerApps Component Framework (PCF) control for Dynamics 365 and Power Platform that provides comprehensive audit history management with advanced filtering, timeline visualization, export capabilities, and compliance reporting features."
+        languagecode="1033" />
     </Descriptions>
-    <Version>1.0.0.34</Version>
+    <Version>1.0.0.36</Version>
     <!-- Solution Package Type: Unmanaged(0)/Managed(1)/Both(2)-->
     <Managed>2</Managed>
     <Publisher>

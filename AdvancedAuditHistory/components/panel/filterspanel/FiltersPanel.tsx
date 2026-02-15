@@ -11,14 +11,19 @@ import {
     Input,
     Checkbox,
     Persona,
-    Field
+    Field,
+    Tag,
+    Avatar,
+    useId,
 } from "@fluentui/react-components";
 import { DatePicker } from "@fluentui/react-datepicker-compat";
 import { Dismiss24Regular, SearchRegular } from "@fluentui/react-icons";
 import * as React from "react";
 import { useState } from "react";
-import { Attribute } from "../../interfaces/attributes";
-import AttributesDropdown from "../dropdown/AttributesDropdown";
+import { Attribute } from "../../../interfaces";
+import AttributesDropdown from "../../dropdown/AttributesDropdown";
+
+
 
 interface IFiltersPanelProps {
     /** Whether the filters panel is open */
@@ -31,14 +36,20 @@ interface IFiltersPanelProps {
     attributes: Attribute[];
     /** Available users for filtering (optional) */
     users?: string[];
+    /** Available action types present in audit data (optional) */
+    availableActionTypes?: string[];
+    /** Earliest audit date for default start date (optional) */
+    earliestAuditDate?: Date;
+    /** Latest audit date for default end date (optional) */
+    latestAuditDate?: Date;
 }
 
 /**
  * Represents the filter criteria for audit history
  */
 export interface AuditFilters {
-    /** Filter by specific user who made changes */
-    user?: string;
+    /** Filter by specific users who made changes */
+    users?: string[];
     /** Filter by action type (Create, Update, Delete, etc.) */
     actionType?: string[];
     /** Filter by operation type */
@@ -74,25 +85,28 @@ export interface AuditFilters {
  * />
  * ```
  */
-const FiltersPanel: React.FC<IFiltersPanelProps> = ({ isOpen, onClose, onApplyFilters, attributes, users = [] }) => {
-    const [userFilter, setUserFilter] = useState<string>("");
+const FiltersPanel: React.FC<IFiltersPanelProps> = ({ isOpen, onClose, onApplyFilters, attributes, users = [], availableActionTypes = [], earliestAuditDate, latestAuditDate }) => {
+    const startDateId = useId('start-date');
+    const endDateId = useId('end-date');
+
+    const [userFilter, setUserFilter] = useState<string[]>([]);
     const [selectedActionTypes, setSelectedActionTypes] = useState<string[]>([]);
     const [selectedOperationTypes, setSelectedOperationTypes] = useState<string[]>([]);
     const [includeSystemChanges, setIncludeSystemChanges] = useState<boolean>(true);
     const [selectedAttributes, setSelectedAttributes] = useState<string[]>([]);
     const [minChangesCount, setMinChangesCount] = useState<string>("");
-    const [startDate, setStartDate] = useState<Date | null>(null);
-    const [endDate, setEndDate] = useState<Date | null>(null);
+    const [startDate, setStartDate] = useState<Date | null>(earliestAuditDate || null);
+    const [endDate, setEndDate] = useState<Date | null>(latestAuditDate || null);
 
     // Action types available in Dynamics 365 audit
     const actionTypes = [
-        { key: "1", text: "Create" },
-        { key: "2", text: "Update" },
-        { key: "3", text: "Delete" },
-        { key: "4", text: "Assign" },
-        { key: "5", text: "Share" },
-        { key: "6", text: "Unshare" },
-        { key: "7", text: "Merge" }
+        { key: "Create", text: "Create" },
+        { key: "Update", text: "Update" },
+        { key: "Delete", text: "Delete" },
+        { key: "Assign", text: "Assign" },
+        { key: "Share", text: "Share" },
+        { key: "Unshare", text: "Unshare" },
+        { key: "Merge", text: "Merge" }
     ];
 
     // Operation types
@@ -106,7 +120,7 @@ const FiltersPanel: React.FC<IFiltersPanelProps> = ({ isOpen, onClose, onApplyFi
 
     const handleApplyFilters = () => {
         const filters: AuditFilters = {
-            user: userFilter || undefined,
+            users: userFilter.length > 0 ? userFilter : undefined,
             actionType: selectedActionTypes.length > 0 ? selectedActionTypes : undefined,
             operationType: selectedOperationTypes.length > 0 ? selectedOperationTypes : undefined,
             includeSystemChanges,
@@ -123,7 +137,7 @@ const FiltersPanel: React.FC<IFiltersPanelProps> = ({ isOpen, onClose, onApplyFi
     };
 
     const handleResetFilters = () => {
-        setUserFilter("");
+        setUserFilter([]);
         setSelectedActionTypes([]);
         setSelectedOperationTypes([]);
         setIncludeSystemChanges(true);
@@ -175,29 +189,59 @@ const FiltersPanel: React.FC<IFiltersPanelProps> = ({ isOpen, onClose, onApplyFi
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                     {/* User Filter Section */}
                     <div>
-                        <Label weight="semibold" style={{ fontSize: 16, marginBottom: 12, display: 'block' }}>
-                            User Filter
-                        </Label>
-                        <Dropdown
-                            placeholder="Select user"
-                            value={userFilter}
-                            onOptionSelect={(_, data) => setUserFilter(data.optionValue ?? "")}
-                        >
-                            {users.map((user, index) => (
-                                <Option key={index} value={user} text={user}>
-                                    <Persona
-                                        avatar={{ color: "colorful", "aria-hidden": true }}
-                                        name={user}
-                                        presence={{
-                                            status: "available",
-                                        }}
-                                        secondaryText="Available"
-                                    />
-                                </Option>
-                            ))}
-                        </Dropdown>
+                        <Field label="User Filter" style={{ fontWeight: 600, fontSize: 16 }}>
+                            <Dropdown
+                                placeholder="Select users"
+                                multiselect
+                                clearable={userFilter.length > 0}
+                                selectedOptions={userFilter}
+                                onOptionSelect={(_, data) => setUserFilter(data.selectedOptions)}
+                                style={{ width: '100%' }}
+                            >
+                                {users.map((user, index) => (
+                                    <Option key={index} value={user} text={user}>
+                                        <Persona
+                                            avatar={{ color: "colorful", "aria-hidden": true }}
+                                            name={user}
+                                            presence={{
+                                                status: "available",
+                                            }}
+                                            secondaryText="Available"
+                                        />
+                                    </Option>
+                                ))}
+                            </Dropdown>
+                        </Field>
+                        {userFilter.length > 0 && (
+                            <div style={{
+                                display: 'flex',
+                                flexWrap: 'wrap',
+                                gap: 8,
+                                marginTop: 12,
+                                padding: 8,
+                                backgroundColor: '#F3F2F1',
+                                borderRadius: 4
+                            }}>
+                                {userFilter.map((user, index) => (
+                                    <Tag
+                                        key={index}
+                                        size="small"
+                                        appearance="filled"
+                                        media={
+                                            <Avatar
+                                                color="colorful"
+                                                name={user}
+                                                size={20}
+                                            />
+                                        }
+                                    >
+                                        {user}
+                                    </Tag>
+                                ))}
+                            </div>
+                        )}
                         <div style={{ fontSize: 12, color: '#605E5C', marginTop: 4 }}>
-                            Filter audit records by the user who made the changes
+                            Filter audit records by users who made the changes
                         </div>
                     </div>
 
@@ -208,24 +252,32 @@ const FiltersPanel: React.FC<IFiltersPanelProps> = ({ isOpen, onClose, onApplyFi
                         <Label weight="semibold" style={{ fontSize: 16, marginBottom: 12, display: 'block' }}>
                             Date Range
                         </Label>
+
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                             <Field label="Start Date">
                                 <DatePicker
+                                    id={startDateId}
                                     placeholder="Select start date"
+                                    minDate={earliestAuditDate}
+                                    maxDate={latestAuditDate}
                                     value={startDate}
                                     onSelectDate={(date) => setStartDate(date || null)}
-                                    positioning={{ position: "below", align: "start" }}
+                                    inlinePopup={true}
                                 />
                             </Field>
                             <Field label="End Date">
                                 <DatePicker
+                                    id={endDateId}
                                     placeholder="Select end date"
+                                    minDate={earliestAuditDate}
+                                    maxDate={latestAuditDate}
                                     value={endDate}
                                     onSelectDate={(date) => setEndDate(date || null)}
-                                    positioning={{ position: "below", align: "start" }}
+                                    inlinePopup={true}
                                 />
                             </Field>
                         </div>
+
                         <div style={{ fontSize: 12, color: '#605E5C', marginTop: 8 }}>
                             Filter audit records within the specified date range
                         </div>
@@ -239,14 +291,18 @@ const FiltersPanel: React.FC<IFiltersPanelProps> = ({ isOpen, onClose, onApplyFi
                             Action Type
                         </Label>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                            {actionTypes.map(action => (
-                                <Checkbox
-                                    key={action.key}
-                                    label={action.text}
-                                    checked={selectedActionTypes.includes(action.key)}
-                                    onChange={(_, data) => handleActionTypeChange(action.key, data.checked === true)}
-                                />
-                            ))}
+                            {actionTypes.map(action => {
+                                const isAvailable = availableActionTypes.length === 0 || availableActionTypes.includes(action.key);
+                                return (
+                                    <Checkbox
+                                        key={action.key}
+                                        label={action.text}
+                                        checked={selectedActionTypes.includes(action.key)}
+                                        disabled={!isAvailable}
+                                        onChange={(_, data) => handleActionTypeChange(action.key, data.checked === true)}
+                                    />
+                                );
+                            })}
                         </div>
                         <div style={{ fontSize: 12, color: '#605E5C', marginTop: 8 }}>
                             Select one or more action types to filter
@@ -279,14 +335,13 @@ const FiltersPanel: React.FC<IFiltersPanelProps> = ({ isOpen, onClose, onApplyFi
 
                     {/* Attribute Filter Section */}
                     <div>
-                        <Label weight="semibold" style={{ fontSize: 16, marginBottom: 12, display: 'block' }}>
-                            Attribute Filter
-                        </Label>
-                        <AttributesDropdown
-                            attributes={attributes}
-                            placeholder="Select attributes to filter"
-                            onFieldsChanged={setSelectedAttributes}
-                        />
+                        <Field label="Attribute Filter" style={{ fontWeight: 600, fontSize: 16 }}>
+                            <AttributesDropdown
+                                attributes={attributes}
+                                placeholder="Select attributes to filter"
+                                onFieldsChanged={setSelectedAttributes}
+                            />
+                        </Field>
                         {selectedAttributes.length > 0 && (
                             <div style={{ fontSize: 12, color: '#323130', marginTop: 8, padding: '4px 8px', backgroundColor: '#F3F2F1', borderRadius: 4 }}>
                                 <strong>Selected: </strong>
@@ -308,26 +363,25 @@ const FiltersPanel: React.FC<IFiltersPanelProps> = ({ isOpen, onClose, onApplyFi
                         <Label weight="semibold" style={{ fontSize: 16, marginBottom: 12, display: 'block' }}>
                             Advanced Options
                         </Label>
-                        
+
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                             <Checkbox
                                 label="Include System Generated Changes"
                                 checked={includeSystemChanges}
                                 onChange={(_, data) => setIncludeSystemChanges(data.checked === true)}
                             />
-                            
-                            <div>
-                                <Label>Minimum Changes Count</Label>
+
+                            <Field label="Minimum Changes Count">
                                 <Input
                                     type="number"
                                     placeholder="e.g., 5"
                                     value={minChangesCount}
                                     onChange={(_, data) => setMinChangesCount(data.value)}
-                                    style={{ marginTop: 4 }}
+                                    style={{ width: '100%' }}
                                 />
-                                <div style={{ fontSize: 12, color: '#605E5C', marginTop: 4 }}>
-                                    Show only audit records with at least this many changes
-                                </div>
+                            </Field>
+                            <div style={{ fontSize: 12, color: '#605E5C', marginTop: 4 }}>
+                                Show only audit records with at least this many changes
                             </div>
                         </div>
                     </div>

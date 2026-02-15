@@ -15,12 +15,19 @@ const useDataverse = (context: ComponentFramework.Context<IInputs>) => {
     const [attributes, setAttributes] = useState<Attribute[]>([]);
     const [audits, setAudits] = useState<Audit[]>([]);
 
+    // Detect test harness environment
+    // Type assertion for PCF authoring mode property not in standard types
+    interface ExtendedMode extends ComponentFramework.Mode {
+        isAuthoringMode?: boolean;
+    }
+    const isTestHarness = (context.mode as ExtendedMode).isAuthoringMode !== true;
+
     const record = useMemo(() => {
         return {
             //@ts-expect-error - contextInfo is not recognized
-            id: context?.mode.contextInfo.entityId,
+            id: context?.mode.contextInfo?.entityId ?? "00000000-0000-0000-0000-000000000000",
             //@ts-expect-error - contextInfo is not recognized
-            entityLogicalName: context?.mode.contextInfo.entityTypeName
+            entityLogicalName: context?.mode.contextInfo?.entityTypeName ?? "account"
         } as Record
     }, [context?.mode]);
 
@@ -32,16 +39,24 @@ const useDataverse = (context: ComponentFramework.Context<IInputs>) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const attributes = await getAttributes();
-            const audits = await getAudit(attributes);
-
-            setAttributes(attributes);
-            setAudits(audits);
-            setIsLoading(false)
+            if (isTestHarness) {
+                // Load mock data for test harness
+                const { mockAttributes, mockAudits } = await import('../mocks/mockData');
+                setAttributes(mockAttributes);
+                setAudits(mockAudits);
+                setIsLoading(false);
+            } else {
+                // Load real data from Dataverse
+                const attributes = await getAttributes();
+                const audits = await getAudit(attributes);
+                setAttributes(attributes);
+                setAudits(audits);
+                setIsLoading(false);
+            }
         }
 
-        fetchData()
-    }, [])
+        void fetchData();
+    }, [isTestHarness])
 
     const getAttributes = async (): Promise<AttributeMetada[]> => {
         const result = await xrmService.fetch(
@@ -49,18 +64,18 @@ const useDataverse = (context: ComponentFramework.Context<IInputs>) => {
         ) as EntityDefinition[];
 
         return result.filter(item => item.LogicalName && !item.LogicalName.includes("_composite"))
-                    .map((item: EntityDefinition) => {
-                        return {
-                            logicalName: item.LogicalName,
-                            displayName: item.DisplayName.UserLocalizedLabel?.Label,
-                            attributeType: item.AttributeType as AttributeTypeCode | undefined,
-                            attributeTypeName: item.AttributeTypeName?.Value,
-                            isAuditEnabled: item.IsAuditEnabled?.Value ?? false,
-                            isValidForRead: item.IsValidForRead ?? true,
-                            isValidForCreate: item.IsValidForCreate ?? true,
-                            isValidForUpdate: item.IsValidForUpdate ?? true
-                        }
-                });
+            .map((item: EntityDefinition) => {
+                return {
+                    logicalName: item.LogicalName,
+                    displayName: item.DisplayName.UserLocalizedLabel?.Label,
+                    attributeType: item.AttributeType as AttributeTypeCode | undefined,
+                    attributeTypeName: item.AttributeTypeName?.Value,
+                    isAuditEnabled: item.IsAuditEnabled?.Value ?? false,
+                    isValidForRead: item.IsValidForRead ?? true,
+                    isValidForCreate: item.IsValidForCreate ?? true,
+                    isValidForUpdate: item.IsValidForUpdate ?? true
+                }
+            });
     }
 
     const getAudit = async (attributes: Attribute[]): Promise<Audit[]> => {
@@ -86,38 +101,38 @@ const useDataverse = (context: ComponentFramework.Context<IInputs>) => {
             const newValue = auditDetail.includes("NewValue") ? Object.keys(detail.NewValue!) : [];
 
             const dataAttributes = attributes?.filter((attributeMetadata) => {
-                    return newValue.includes(attributeMetadata.logicalName) || 
-                        newValue.includes(`_${attributeMetadata.logicalName}_value`) ||
-                        oldValue.includes(attributeMetadata.logicalName) || 
-                        oldValue.includes(`_${attributeMetadata.logicalName}_value`)
-                    }
-                )?.map((attributeMetadata) => {
-                    return {
-                        logicalName: attributeMetadata.logicalName,
-                        displayName: attributeMetadata.displayName,
-                        attributeType: attributeMetadata.attributeType,
-                        attributeTypeName: attributeMetadata.attributeTypeName,
-                        isAuditEnabled: attributeMetadata.isAuditEnabled,
-                        isValidForRead: attributeMetadata.isValidForRead,
-                        oldValue: oldValue.includes(attributeMetadata.logicalName)
-                            ? getFormattedValue(oldValue, detail.OldValue, attributeMetadata.logicalName)
-                            : oldValue.includes(`_${attributeMetadata.logicalName}_value`)
+                return newValue.includes(attributeMetadata.logicalName) ||
+                    newValue.includes(`_${attributeMetadata.logicalName}_value`) ||
+                    oldValue.includes(attributeMetadata.logicalName) ||
+                    oldValue.includes(`_${attributeMetadata.logicalName}_value`)
+            }
+            )?.map((attributeMetadata) => {
+                return {
+                    logicalName: attributeMetadata.logicalName,
+                    displayName: attributeMetadata.displayName,
+                    attributeType: attributeMetadata.attributeType,
+                    attributeTypeName: attributeMetadata.attributeTypeName,
+                    isAuditEnabled: attributeMetadata.isAuditEnabled,
+                    isValidForRead: attributeMetadata.isValidForRead,
+                    oldValue: oldValue.includes(attributeMetadata.logicalName)
+                        ? getFormattedValue(oldValue, detail.OldValue, attributeMetadata.logicalName)
+                        : oldValue.includes(`_${attributeMetadata.logicalName}_value`)
                             ? {
                                 id: detail.OldValue![`_${attributeMetadata.logicalName}_value`],
                                 name: detail.OldValue![`_${attributeMetadata.logicalName}_value@OData.Community.Display.V1.FormattedValue`],
                                 entityType: detail.OldValue![`_${attributeMetadata.logicalName}_value@Microsoft.Dynamics.CRM.lookuplogicalname`]
                             } as Lookup
                             : "",
-                        newValue: newValue.includes(attributeMetadata.logicalName)
-                            ? getFormattedValue(newValue, detail.NewValue, attributeMetadata.logicalName)
-                            : newValue.includes(`_${attributeMetadata.logicalName}_value`)
+                    newValue: newValue.includes(attributeMetadata.logicalName)
+                        ? getFormattedValue(newValue, detail.NewValue, attributeMetadata.logicalName)
+                        : newValue.includes(`_${attributeMetadata.logicalName}_value`)
                             ? {
                                 id: detail.NewValue![`_${attributeMetadata.logicalName}_value`],
                                 name: detail.NewValue![`_${attributeMetadata.logicalName}_value@OData.Community.Display.V1.FormattedValue`],
                                 entityType: detail.NewValue![`_${attributeMetadata.logicalName}_value@Microsoft.Dynamics.CRM.lookuplogicalname`]
                             } as Lookup
                             : "",
-                    };
+                };
             })
 
             return {
@@ -135,8 +150,15 @@ const useDataverse = (context: ComponentFramework.Context<IInputs>) => {
     }
 
     const onRefresh = async () => {
-        const audits = await getAudit(attributes);
-        setAudits(audits);
+        if (isTestHarness) {
+            // Reload mock data for test harness
+            const { mockAudits } = await import('../mocks/mockData');
+            setAudits(mockAudits);
+        } else {
+            // Fetch fresh data from Dataverse
+            const audits = await getAudit(attributes);
+            setAudits(audits);
+        }
     }
 
     return {

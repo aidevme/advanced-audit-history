@@ -4,3 +4,4 @@
 
 export { AnalyticsService } from './AnalyticsService/AnalyticsService';
 export { SecurityService } from './SecurityService/SecurityService';
+export { ExportService } from './ExportService/ExportService';

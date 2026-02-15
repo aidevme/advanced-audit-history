@@ -2,10 +2,10 @@ import * as React from 'react';
 import { Label, Tag, TagProps } from '@fluentui/react-components';
 import { Dismiss12Regular } from '@fluentui/react-icons';
 import { Attribute } from '../../interfaces/attributes';
-import { AuditFilters } from '../panel/FiltersPanel';
+import { AuditFilters } from '../panel/filterspanel/FiltersPanel';
 
 interface IActiveFiltersProps {
-    activeFilters: AuditFilters;
+    activeFilters: AuditFilters | null;
     attributes: Attribute[];
     onDismissFilter: (filterType: 'user' | 'attribute' | 'actionType' | 'operationType' | 'minChanges', value?: string) => void;
 }
@@ -16,26 +16,32 @@ export const ActiveFilters: React.FC<IActiveFiltersProps> = ({ activeFilters, at
             <Label weight="semibold" style={{ fontSize: 14, color: '#323130' }}>
                 Filters:
             </Label>
-            {activeFilters.user && (
-                <Tag 
-                    appearance="filled" 
-                    color="brand"
-                    shape="rounded" 
+            {!activeFilters && (
+                <Label style={{ fontSize: 12, color: '#605E5C', fontStyle: 'italic' }}>
+                    No active filters
+                </Label>
+            )}
+            {activeFilters?.users && activeFilters.users.length > 0 && activeFilters.users.map((user, index) => (
+                <Tag
+                    key={index}
+                    appearance="filled"
+                    color="colorful"
+                    shape="rounded"
                     size="small"
                     dismissible
-                    dismissIcon={{ onClick: () => onDismissFilter('user') }}
+                    dismissIcon={{ onClick: () => onDismissFilter('user', user) }}
                 >
-                    User: {activeFilters.user}
+                    User: {user}
                 </Tag>
-            )}
-            {activeFilters.attributeNames && activeFilters.attributeNames.length > 0 && 
+            ))}
+            {activeFilters?.attributeNames && activeFilters.attributeNames.length > 0 &&
                 activeFilters.attributeNames.map((logicalName, index) => {
                     const attr = attributes.find(a => a.logicalName === logicalName);
                     return (
-                        <Tag 
+                        <Tag
                             key={index}
-                            appearance="outline" 
-                            shape="rounded" 
+                            appearance="outline"
+                            shape="rounded"
                             size="small"
                             dismissible
                             dismissIcon={{ onClick: () => onDismissFilter('attribute', logicalName) }}
@@ -45,10 +51,10 @@ export const ActiveFilters: React.FC<IActiveFiltersProps> = ({ activeFilters, at
                     );
                 })
             }
-            {activeFilters.actionType && activeFilters.actionType.length > 0 && (
-                <Tag 
-                    appearance="outline" 
-                    shape="rounded" 
+            {activeFilters?.actionType && activeFilters.actionType.length > 0 && (
+                <Tag
+                    appearance="outline"
+                    shape="rounded"
                     size="small"
                     dismissible
                     dismissIcon={{ onClick: () => onDismissFilter('actionType') }}
@@ -56,10 +62,10 @@ export const ActiveFilters: React.FC<IActiveFiltersProps> = ({ activeFilters, at
                     Actions: {activeFilters.actionType.length} selected
                 </Tag>
             )}
-            {activeFilters.operationType && activeFilters.operationType.length > 0 && (
-                <Tag 
-                    appearance="outline" 
-                    shape="rounded" 
+            {activeFilters?.operationType && activeFilters.operationType.length > 0 && (
+                <Tag
+                    appearance="outline"
+                    shape="rounded"
                     size="small"
                     dismissible
                     dismissIcon={{ onClick: () => onDismissFilter('operationType') }}
@@ -67,10 +73,10 @@ export const ActiveFilters: React.FC<IActiveFiltersProps> = ({ activeFilters, at
                     Operations: {activeFilters.operationType.length} selected
                 </Tag>
             )}
-            {activeFilters.minChangesCount && (
-                <Tag 
-                    appearance="outline" 
-                    shape="rounded" 
+            {activeFilters?.minChangesCount && (
+                <Tag
+                    appearance="outline"
+                    shape="rounded"
                     size="small"
                     dismissible
                     dismissIcon={{ onClick: () => onDismissFilter('minChanges') }}

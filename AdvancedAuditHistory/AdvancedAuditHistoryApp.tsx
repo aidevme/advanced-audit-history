@@ -1,5 +1,16 @@
 import * as React from "react";
-import { FluentProvider, webLightTheme, IdPrefixProvider, Dialog, DialogSurface, DialogTitle, DialogBody, DialogActions, Button, Spinner, MessageBar, MessageBarBody, MessageBarTitle } from "@fluentui/react-components";
+import {
+    FluentProvider,
+    webLightTheme,
+    IdPrefixProvider,
+    Dialog,
+    DialogSurface,
+    DialogBody,
+    DialogActions,
+    Button,
+    Spinner,
+    makeStyles
+} from "@fluentui/react-components";
 import { IInputs } from "./generated/ManifestTypes";
 import { ControlContext } from "./context/control-context";
 import History from "./components/history";
@@ -8,15 +19,67 @@ import Header, { DateRange } from "./components/header/header";
 import { useMemo, useState, useEffect } from "react";
 import { FilterContext } from "./context/filter-context";
 import { sortAudits } from "./utils/utils";
-import { AuditFilters } from "./components/panel/FiltersPanel";
+import { AuditFilters } from "./components/panel/filterspanel/FiltersPanel";
 import { AuditAnalyticsDashboard } from "./components/dashboards";
 import { SecurityService } from "./services/SecurityService/SecurityService";
+import { ErrorPanel, ERROR_PANEL_TYPES } from "./components/panel/errorpanel/ErrorPanel";
+
+const useAdvancedAuditHistoryAppStyles = makeStyles({
+    root: {
+        width: '100%'
+    },
+    spinnerContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        width: '100%',
+        backgroundColor: 'rgba(128, 128, 128, 0.3)',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        zIndex: 9999
+    },
+    spinnerContainerNoOverlay: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        width: '100%'
+    },
+    errorContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        width: '100%',
+        padding: '20px'
+    },
+    noDataContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '40px 20px'
+    },
+    contentContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px',
+        padding: '2px'
+    },
+    dialogSurface: {
+        maxWidth: '95vw',
+        width: '1400px',
+        maxHeight: '90vh'
+    }
+});
 
 export interface IAdvancedAuditHistoryAppProps {
     context: ComponentFramework.Context<IInputs>
 }
 
 export default function AdvancedAuditHistoryApp({ context }: IAdvancedAuditHistoryAppProps) {
+    const styles = useAdvancedAuditHistoryAppStyles();
     const { formatting, parameters, resources } = context;
     const { isLoading, attributes, audits, record, onRefresh } = useDataverse(context);
     const [filter, setFilter] = useState<string[]>([]);
@@ -27,17 +90,53 @@ export default function AdvancedAuditHistoryApp({ context }: IAdvancedAuditHisto
     const [searchTerm, setSearchTerm] = useState('');
     const [showAnalytics, setShowAnalytics] = useState(false);
 
-    // Security validation state
+    // Check if running in test harness or design mode
+    // Type assertion for PCF authoring mode property not in standard types
+    interface ExtendedMode extends ComponentFramework.Mode {
+        isAuthoringMode?: boolean;
+    }
+    const isTestHarness = (context.mode as ExtendedMode).isAuthoringMode !== true;
+
+    // Debug logging
+    console.log('[AdvancedAuditHistory] Test Harness Mode:', isTestHarness);
+    console.log('[AdvancedAuditHistory] Context Mode:', context?.mode);
+    console.log('[AdvancedAuditHistory] Record:', record);
+
+    // Security validation state - skip security in test harness
     const [securityCheck, setSecurityCheck] = useState<{
         isChecking: boolean;
         canAccess: boolean;
         hasPermission: boolean;
         isAuditEnabled: boolean;
         message?: string;
-    }>({ isChecking: true, canAccess: true, hasPermission: true, isAuditEnabled: true });
+    }>(() => {
+        // Initialize with granted access for test harness
+        if (isTestHarness) {
+            console.log('[AdvancedAuditHistory] Security: Bypassing checks for test harness');
+            return {
+                isChecking: false,
+                canAccess: true,
+                hasPermission: true,
+                isAuditEnabled: true
+            };
+        }
+        // Default state for production
+        console.log('[AdvancedAuditHistory] Security: Initializing for production');
+        return {
+            isChecking: true,
+            canAccess: true,
+            hasPermission: true,
+            isAuditEnabled: true
+        };
+    });
 
     // Validate user permissions and entity audit status on mount
     useEffect(() => {
+        // Skip all security validation in test harness
+        if (isTestHarness) {
+            return; // State already initialized with access granted
+        }
+
         const validateAccess = async () => {
             if (!record.entityLogicalName) {
                 setSecurityCheck({
@@ -61,7 +160,7 @@ export default function AdvancedAuditHistoryApp({ context }: IAdvancedAuditHisto
         };
 
         void validateAccess();
-    }, [context, record.entityLogicalName]);
+    }, [context, record.entityLogicalName, isTestHarness]);
 
     const filteredAudits = useMemo(() => {
         let filtered = !filter || filter.length <= 0 ?
@@ -94,12 +193,12 @@ export default function AdvancedAuditHistoryApp({ context }: IAdvancedAuditHisto
                 });
             }
 
-            // Filter by user
-            if (advancedFilters.user) {
-                const userLower = advancedFilters.user.toLowerCase();
+            // Filter by users
+            if (advancedFilters.users && advancedFilters.users.length > 0) {
+                const usersLower = advancedFilters.users.map(u => u.toLowerCase());
                 filtered = filtered.filter((audit) => {
                     const userName = audit.user?.name?.toLowerCase() || '';
-                    return userName.includes(userLower);
+                    return usersLower.some(user => userName.includes(user));
                 });
             }
 
@@ -169,26 +268,40 @@ export default function AdvancedAuditHistoryApp({ context }: IAdvancedAuditHisto
         return Array.from(new Set(users)).sort();
     }, [audits])
 
+    const availableActionTypes = useMemo(() => {
+        const actionTypes = audits
+            .map(audit => audit.operation?.toString())
+            .filter((action): action is string => !!action);
+        return Array.from(new Set(actionTypes));
+    }, [audits])
+
+    const earliestAuditDate = useMemo(() => {
+        if (audits.length === 0) return undefined;
+        const dates = audits
+            .map(audit => audit.timestamp)
+            .filter((date): date is Date => !!date);
+        if (dates.length === 0) return undefined;
+        return new Date(Math.min(...dates.map(d => d.getTime())));
+    }, [audits])
+
+    const latestAuditDate = useMemo(() => {
+        if (audits.length === 0) return undefined;
+        const dates = audits
+            .map(audit => audit.timestamp)
+            .filter((date): date is Date => !!date);
+        if (dates.length === 0) return undefined;
+        return new Date(Math.max(...dates.map(d => d.getTime())));
+    }, [audits])
+
     return (
-        <div style={{ width: '100%' }}>
+        <div className={styles.root}>
             <IdPrefixProvider value="APPID-">
                 <FluentProvider theme={webLightTheme}>
                     <ControlContext.Provider value={{ context, formatting, parameters, resources, record }}>
                         <FilterContext.Provider value={{ filter: filteredAttributes }}>
                             {
                                 securityCheck.isChecking ? (
-                                    <div style={{
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        height: '100vh',
-                                        width: '100%',
-                                        backgroundColor: 'rgba(128, 128, 128, 0.3)',
-                                        position: 'fixed',
-                                        top: 0,
-                                        left: 0,
-                                        zIndex: 9999
-                                    }}>
+                                    <div className={styles.spinnerContainer}>
                                         <Spinner
                                             size="huge"
                                             label="Validating access... Please wait"
@@ -196,48 +309,32 @@ export default function AdvancedAuditHistoryApp({ context }: IAdvancedAuditHisto
                                         />
                                     </div>
                                 ) : !securityCheck.canAccess ? (
-                                    <div style={{
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        height: '100vh',
-                                        width: '100%',
-                                        padding: '20px'
-                                    }}>
-                                        <MessageBar
-                                            intent={!securityCheck.hasPermission ? "error" : "warning"}
-                                            style={{ maxWidth: '600px' }}
-                                        >
-                                            <MessageBarBody>
-                                                <MessageBarTitle>
-                                                    {!securityCheck.hasPermission ? 'Access Denied' : 'Audit Not Enabled'}
-                                                </MessageBarTitle>
-                                                {securityCheck.message}
-                                            </MessageBarBody>
-                                        </MessageBar>
+                                    <div className={styles.errorContainer}>
+                                        <ErrorPanel
+                                            resources={resources}
+                                            errorType={!securityCheck.hasPermission ? ERROR_PANEL_TYPES.NO_PERMISSION : ERROR_PANEL_TYPES.AUDIT_NOT_ENABLED}
+                                            message={securityCheck.message}
+                                        />
                                     </div>
                                 ) : isLoading ? (
-                                    <div style={{
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        height: '100vh',
-                                        width: '100%',
-                                        backgroundColor: 'rgba(128, 128, 128, 0.3)',
-                                        position: 'fixed',
-                                        top: 0,
-                                        left: 0,
-                                        zIndex: 9999
-                                    }}>
+                                    <div className={styles.spinnerContainer}>
                                         <Spinner
                                             size="huge"
                                             label="Audit History loading... Please wait"
                                             labelPosition="below"
                                         />
                                     </div>
+                                ) : audits.length === 0 ? (
+                                    <div className={styles.noDataContainer}>
+                                        <ErrorPanel
+                                            resources={resources}
+                                            errorType={ERROR_PANEL_TYPES.NO_AUDIT_DATA}
+                                        />
+                                    </div>
                                 ) : (
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, padding: 2 }}>
+                                    <div className={styles.contentContainer}>
                                         <Header
+                                            audits={filteredAudits}
                                             order={order}
                                             attributes={filteredAttributes}
                                             onFieldsChanged={setFilter}
@@ -249,6 +346,9 @@ export default function AdvancedAuditHistoryApp({ context }: IAdvancedAuditHisto
                                             onSearchChanged={setSearchTerm}
                                             onShowAnalytics={() => setShowAnalytics(true)}
                                             users={uniqueUsers}
+                                            availableActionTypes={availableActionTypes}
+                                            earliestAuditDate={earliestAuditDate}
+                                            latestAuditDate={latestAuditDate}
                                         />
                                         <History audits={filteredAudits} viewType={viewType} />
                                     </div>
@@ -263,7 +363,7 @@ export default function AdvancedAuditHistoryApp({ context }: IAdvancedAuditHisto
                         onOpenChange={(event, data) => setShowAnalytics(data.open)}
                         modalType="non-modal"
                     >
-                        <DialogSurface style={{ maxWidth: '95vw', width: '1400px', maxHeight: '90vh' }}>
+                        <DialogSurface className={styles.dialogSurface}>
                             <DialogBody>
                                 <AuditAnalyticsDashboard
                                     audits={filteredAudits}

@@ -1,7 +1,8 @@
 {
     // ResX Editor Configuration
     "workbench.editorAssociations": {
-        "*.resx": "default"
+        "*.resx": "resx.editor",
+        "*.copilotmd": "vscode.markdown.preview.editor"
     },
     // File associations for ResX files
     "files.associations": {
