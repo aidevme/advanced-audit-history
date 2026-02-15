@@ -13,14 +13,14 @@ interface IProps {
 const LookupField = ({ item, isAuditField }: IProps) => {
     const { context } = useContext(ControlContext);
     const { openForm } = useNavigation(context)
-    
+
     const onLookupClicked = (value: Lookup) => {
-        openForm(value.entityType, value.id)
+        void openForm(value.entityType, value.id)
     }
 
     return (
-        <Link 
-            style={{ 
+        <Link
+            style={{
                 backgroundColor: isAuditField == false ? 'transparent' : "rgb(235, 243, 252)",
                 color: "rgb(17, 94, 163)",
                 borderRadius: isAuditField == false ? 0 : 4,
@@ -34,5 +34,5 @@ const LookupField = ({ item, isAuditField }: IProps) => {
         </Link>
     );
 }
- 
+
 export default LookupField;

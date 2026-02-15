@@ -1,12 +1,5 @@
 import { IInputs } from "../generated/ManifestTypes";
-
-/**
- * Extended Navigation interface with undocumented PCF methods
- * navigateTo exists at runtime but is not included in official PCF SDK types
- */
-interface ExtendedNavigation extends ComponentFramework.Navigation {
-    navigateTo(pageInput: unknown, navigationOptions?: unknown): Promise<void>;
-}
+import { ExtendedNavigation } from "../interfaces/pcf";
 
 const popupOtions = {
     height: { value: 85, unit: "%" },

@@ -7,6 +7,7 @@ import { Attribute, AttributeMetada, Lookup } from "../interfaces/attributes";
 import { XrmRequest } from "../interfaces/xrm";
 import { History } from "../interfaces/data";
 import { Audit, AuditDetail } from "../interfaces/audit";
+import { ExtendedMode } from "../interfaces/pcf";
 import { getFormattedValue } from "../utils/utils";
 import { AttributeTypeCode } from "../enums/AttributeTypeCode";
 
@@ -15,15 +16,7 @@ const useDataverse = (context: ComponentFramework.Context<IInputs>) => {
     const [attributes, setAttributes] = useState<Attribute[]>([]);
     const [audits, setAudits] = useState<Audit[]>([]);
 
-    // Detect test harness environment
-    // Type assertion for PCF authoring mode and context info not in standard types
-    interface ExtendedMode extends ComponentFramework.Mode {
-        isAuthoringMode?: boolean;
-        contextInfo?: {
-            entityId?: string;
-            entityTypeName?: string;
-        };
-    }
+    // Detect test harness environment using ExtendedMode interface
     const isTestHarness = (context.mode as ExtendedMode).isAuthoringMode !== true;
 
     const record = useMemo(() => {

@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const { getWebpackConfig } = require('pcf-scripts/webpackConfig');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -10,9 +11,22 @@ module.exports = function (env) {
     // Determine if this is a production build
     const isProduction = process.env.NODE_ENV === 'production' || env === 'production';
 
+    // Initialize plugins array
+    config.plugins = config.plugins || [];
+
+    // Add DefinePlugin to inject NODE_ENV into bundle
+    // This allows React to use production builds and eliminates development warnings
+    // Note: React/ReactDOM are marked as 'external' by PCF Scripts, so they're provided
+    // by the Power Platform runtime rather than bundled. The Babel warning about
+    // react-dom.development.js during build is informational and doesn't affect output.
+    config.plugins.push(
+        new webpack.DefinePlugin({
+            'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development')
+        })
+    );
+
     // Add bundle analyzer plugin if ANALYZE is set
     if (process.env.ANALYZE) {
-        config.plugins = config.plugins || [];
         config.plugins.push(
             new BundleAnalyzerPlugin({
                 analyzerMode: 'static',
@@ -110,7 +124,9 @@ module.exports = function (env) {
     config.resolve = {
         ...config.resolve,
         extensions: ['.ts', '.tsx', '.js', '.jsx'],
-        // Add aliases to reduce path resolution time
+        // Prefer production builds when resolving modules
+        mainFields: ['browser', 'module', 'main'],
+        // Add aliases to reduce path resolution time and force production builds
         alias: {
             ...config.resolve?.alias,
             'react': path.resolve(__dirname, 'node_modules/react'),
@@ -123,8 +139,14 @@ module.exports = function (env) {
     // Module optimizations
     config.module = {
         ...config.module,
-        // noParse for libraries that don't need parsing
-        noParse: /\.min\.js$/,
+        // noParse for libraries that don't need parsing (skip Babel processing)
+        noParse: [
+            /\.min\.js$/,
+            /react\.development\.js$/,
+            /react-dom\.development\.js$/,
+            /react\.production\.min\.js$/,
+            /react-dom\.production\.min\.js$/
+        ],
     };
 
     return config;

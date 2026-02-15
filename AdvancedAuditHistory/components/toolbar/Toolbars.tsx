@@ -181,7 +181,7 @@ export const Toolbars: React.FC<IToolbarsProps> = ({
         {
             label: "Export to Excel",
             icon: <DocumentIcon />,
-            onClick: handleExportExcel
+            onClick: () => void handleExportExcel()
         },
         {
             label: "Export to CSV",

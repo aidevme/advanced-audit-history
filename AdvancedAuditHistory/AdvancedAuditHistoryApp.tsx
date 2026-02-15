@@ -23,6 +23,7 @@ import { AuditFilters } from "./components/panel/filterspanel/FiltersPanel";
 import { AuditAnalyticsDashboard } from "./components/dashboards";
 import { SecurityService } from "./services/SecurityService/SecurityService";
 import { ErrorPanel, ERROR_PANEL_TYPES } from "./components/panel/errorpanel/ErrorPanel";
+import { ExtendedMode } from "./interfaces/pcf";
 
 const useAdvancedAuditHistoryAppStyles = makeStyles({
     root: {
@@ -91,10 +92,6 @@ export default function AdvancedAuditHistoryApp({ context }: IAdvancedAuditHisto
     const [showAnalytics, setShowAnalytics] = useState(false);
 
     // Check if running in test harness or design mode
-    // Type assertion for PCF authoring mode property not in standard types
-    interface ExtendedMode extends ComponentFramework.Mode {
-        isAuthoringMode?: boolean;
-    }
     const isTestHarness = (context.mode as ExtendedMode).isAuthoringMode !== true;
 
     // Debug logging

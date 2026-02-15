@@ -1,14 +1,6 @@
 // AdvancedAuditHistory\services\SecurityService\SecurityService.ts
 import { IInputs } from "../../generated/ManifestTypes";
-
-/**
- * Extended PCF context interface for accessing page context
- */
-interface ExtendedContext extends ComponentFramework.Context<IInputs> {
-    page?: {
-        getClientUrl?: () => string;
-    };
-}
+import { ExtendedContext } from "../../interfaces/pcf";
 
 /**
  * Privilege definition from Dataverse security model
@@ -37,6 +29,21 @@ interface EntityMetadataResponse {
         Value: boolean;
     };
     Privileges?: Privilege[];
+}
+
+/**
+ * System user roles entity response
+ */
+interface SystemUserRoleEntity {
+    roleid: string;
+}
+
+/**
+ * Role privileges entity response
+ */
+interface RolePrivilegeEntity {
+    privilegeid: string;
+    privilegedepthmask: number;
 }
 
 /**
@@ -100,7 +107,7 @@ export class SecurityService {
                 return [];
             }
 
-            const roleIds = userRolesResponse.entities.map(entity => entity.roleid);
+            const roleIds = (userRolesResponse.entities as SystemUserRoleEntity[]).map(entity => entity.roleid);
 
             // Step 2: Get entity metadata to find available privileges for this entity
             const extendedContext = context as ExtendedContext;
@@ -124,7 +131,7 @@ export class SecurityService {
             }
 
             const metadataData = await metadataResponse.json() as EntityMetadataResponse;
-            const entityPrivileges = metadataData.Privileges || [];
+            const entityPrivileges = metadataData.Privileges ?? [];
 
             if (entityPrivileges.length === 0) {
                 return [];
@@ -148,10 +155,10 @@ export class SecurityService {
             const privilegeMap = new Map<string, number>();
 
             // Aggregate depth masks across all roles (use bitwise OR to get highest access)
-            rolePrivilegesResponse.entities.forEach(rolePriv => {
-                const privId = rolePriv.privilegeid;
-                const depthMask = rolePriv.privilegedepthmask || 0;
-                const currentMask = privilegeMap.get(privId) || 0;
+            (rolePrivilegesResponse.entities as RolePrivilegeEntity[]).forEach(rolePriv => {
+                const privId: string = rolePriv.privilegeid;
+                const depthMask: number = rolePriv.privilegedepthmask ?? 0;
+                const currentMask: number = privilegeMap.get(privId) ?? 0;
                 privilegeMap.set(privId, currentMask | depthMask);
             });
 
