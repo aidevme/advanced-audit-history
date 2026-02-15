@@ -522,7 +522,8 @@ export class ExportService {
             // Render row data
             rowData.forEach((cellData, i) => {
                 const maxWidth = this.PDF_CONFIG.COLUMN_WIDTHS[i] - 2;
-                const truncatedText = doc.splitTextToSize(cellData, maxWidth)[0] ?? '';
+                const splitText = doc.splitTextToSize(cellData, maxWidth) as string[];
+                const truncatedText = splitText[0] ?? '';
                 doc.text(truncatedText, xPos, yPos);
                 xPos += this.PDF_CONFIG.COLUMN_WIDTHS[i];
             });

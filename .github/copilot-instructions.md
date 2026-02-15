@@ -345,9 +345,23 @@ npm test -- --watch   # Watch mode
 - Use TypeScript strict mode (`strict: true` in tsconfig.json)
 - Prefer interface over type for object shapes
 - Use async/await over Promise chains
-- Use optional chaining (`?.`) and nullish coalescing (`??`)
+- **Always use nullish coalescing (`??`) instead of logical OR (`||`)** - safer operator that only checks for `null`/`undefined`
+- Use optional chaining (`?.`) for safe property access
 - Enum for constants, never magic strings or numbers
 - Component prop names: PascalCase, functions: camelCase
+
+**Examples of nullish coalescing usage**:
+```typescript
+// ✅ CORRECT - uses ?? (nullish coalescing)
+const name = user.name ?? 'Unknown';
+const count = data.count ?? 0;
+const text = getValue() ?? '';
+
+// ❌ INCORRECT - uses || (logical OR)
+const name = user.name || 'Unknown';  // Fails for empty string ""
+const count = data.count || 0;        // Fails for 0
+const text = getValue() || '';        // Fails for false, 0, ""
+```
 
 ## Integration Points
 - **Power BI**: Use Power BI Embedded SDK, not direct REST API
