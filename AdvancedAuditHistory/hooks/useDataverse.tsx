@@ -16,18 +16,21 @@ const useDataverse = (context: ComponentFramework.Context<IInputs>) => {
     const [audits, setAudits] = useState<Audit[]>([]);
 
     // Detect test harness environment
-    // Type assertion for PCF authoring mode property not in standard types
+    // Type assertion for PCF authoring mode and context info not in standard types
     interface ExtendedMode extends ComponentFramework.Mode {
         isAuthoringMode?: boolean;
+        contextInfo?: {
+            entityId?: string;
+            entityTypeName?: string;
+        };
     }
     const isTestHarness = (context.mode as ExtendedMode).isAuthoringMode !== true;
 
     const record = useMemo(() => {
+        const mode = context?.mode as ExtendedMode;
         return {
-            //@ts-expect-error - contextInfo is not recognized
-            id: context?.mode.contextInfo?.entityId ?? "00000000-0000-0000-0000-000000000000",
-            //@ts-expect-error - contextInfo is not recognized
-            entityLogicalName: context?.mode.contextInfo?.entityTypeName ?? "account"
+            id: mode.contextInfo?.entityId ?? "00000000-0000-0000-0000-000000000000",
+            entityLogicalName: mode.contextInfo?.entityTypeName ?? "account"
         } as Record
     }, [context?.mode]);
 

@@ -1,9 +1,17 @@
 import { IInputs } from "../generated/ManifestTypes";
 
+/**
+ * Extended Navigation interface with undocumented PCF methods
+ * navigateTo exists at runtime but is not included in official PCF SDK types
+ */
+interface ExtendedNavigation extends ComponentFramework.Navigation {
+    navigateTo(pageInput: unknown, navigationOptions?: unknown): Promise<void>;
+}
+
 const popupOtions = {
-    height: {value: 85, unit:"%"},
-    width: {value: 90, unit:"%"}, 
-    target: 2,  
+    height: { value: 85, unit: "%" },
+    width: { value: 90, unit: "%" },
+    target: 2,
     position: 1
 }
 
@@ -15,8 +23,10 @@ export const useNavigation = (context: ComponentFramework.Context<IInputs>) => {
             pageType: "entityrecord"
         }
 
-        //@ts-expect-error - Method does not exist in PCF SDK however it should be use to maintain control state alive
-        await context.navigation.navigateTo(pageInput, popupOtions);
+        // Cast to extended interface to access navigateTo method
+        // This method maintains control state alive during navigation
+        const navigation = context.navigation as ExtendedNavigation;
+        await navigation.navigateTo(pageInput, popupOtions);
     }
 
     const openConfirmationDialog = async (): Promise<boolean> => {
