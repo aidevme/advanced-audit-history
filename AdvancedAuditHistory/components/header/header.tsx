@@ -20,7 +20,6 @@ interface IHeaderProps {
     onFiltersApplied: (filters: AuditFilters | null) => void,
     onViewTypeChanged: (viewType: 'card' | 'card-timeline') => void,
     onSearchChanged: (searchTerm: string) => void,
-    onShowAnalytics?: () => void,
     users: string[],
     availableActionTypes?: string[],
     earliestAuditDate?: Date,
@@ -32,7 +31,7 @@ export interface DateRange {
     endDate?: Date;
 }
 
-const Header = ({ audits, order, attributes, onFieldsChanged, onDateRangeSelected, onRefresh, onAuditSortOrderChanged, onFiltersApplied, onViewTypeChanged, onSearchChanged, onShowAnalytics, users, availableActionTypes = [], earliestAuditDate, latestAuditDate }: IHeaderProps) => {
+const Header = ({ audits, order, attributes, onFieldsChanged, onDateRangeSelected, onRefresh, onAuditSortOrderChanged, onFiltersApplied, onViewTypeChanged, onSearchChanged, users, availableActionTypes = [], earliestAuditDate, latestAuditDate }: IHeaderProps) => {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isFiltersOpen, setIsFiltersOpen] = useState(false);
     const [activeFilters, setActiveFilters] = useState<AuditFilters | null>(null);
@@ -150,7 +149,6 @@ const Header = ({ audits, order, attributes, onFieldsChanged, onDateRangeSelecte
                 onSearchChanged={handleSearchChange}
                 onClearSearch={handleClearSearch}
                 onViewTypeChanged={handleViewTypeChange}
-                onShowAnalytics={onShowAnalytics}
                 onOrderChanged={onOrderChanged}
                 onFiltersClick={onFiltersClick}
                 onClearAllFilters={onClearAllFilters}

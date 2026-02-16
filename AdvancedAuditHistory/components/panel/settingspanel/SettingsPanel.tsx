@@ -11,7 +11,7 @@ import {
     Tab,
     makeStyles
 } from "@fluentui/react-components";
-import { Dismiss24Regular } from "@fluentui/react-icons";
+import { Icons } from '../../../tools/IconTools';
 import * as React from "react";
 
 const useSettingsPanelStyles = makeStyles({
@@ -90,7 +90,7 @@ const SettingsPanel: React.FC<ISettingsPanelProps> = ({ isOpen, onClose }) => {
                         <Button
                             appearance="subtle"
                             aria-label="Close"
-                            icon={<Dismiss24Regular />}
+                            icon={<Icons.Dismiss24 />}
                             onClick={onClose}
                         />
                     }

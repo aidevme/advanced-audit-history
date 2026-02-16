@@ -1,6 +1,6 @@
 {
   "name": "@aidevme/advanced-audit-history",
-  "version": "0.0.33",
+  "version": "0.0.49",
   "description": "Enterprise-grade PowerApps Component Framework (PCF) control for Dynamics 365/Power Platform audit history management.",
   "sideEffects": false,
   "repository": {
@@ -8,7 +8,7 @@
     "url": "https://github.com/aidevme/advanced-audit-history.git"
   },
   "scripts": {
-    "build": "pcf-scripts build",
+    "build": "cross-env NODE_ENV=production pcf-scripts build",
     "build:prod": "cross-env NODE_ENV=production pcf-scripts build",
     "clean": "pcf-scripts clean",
     "lint": "pcf-scripts lint",

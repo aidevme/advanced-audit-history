@@ -8,7 +8,7 @@ export const useAudit = (context: ComponentFramework.Context<IInputs>) => {
     const { record } = useContext(ControlContext);
 
     // Detect test harness mode using PCF authoring mode property
-    const isTestHarness = (context.mode as ExtendedMode).isAuthoringMode !== true;
+    const isTestHarness = (context.mode as ExtendedMode).isAuthoringMode !== false;
 
     const restoreChanges = async (attributes: Attribute[]) => {
         // Skip restore in test harness mode

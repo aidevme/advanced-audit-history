@@ -1,5 +1,5 @@
 import { Input, Tooltip, useId } from "@fluentui/react-components";
-import { Search20Regular, Dismiss20Regular } from '@fluentui/react-icons';
+import { Icons } from '../../../tools/IconTools';
 import * as React from "react";
 
 /**
@@ -62,10 +62,10 @@ export const SearchInput: React.FC<SearchInputProps> = ({
                 placeholder={placeholder}
                 value={value}
                 onChange={handleChange}
-                contentBefore={<Search20Regular />}
+                contentBefore={<Icons.Search />}
                 contentAfter={
                     value ? (
-                        <Dismiss20Regular
+                        <Icons.Dismiss20
                             onClick={onClear}
                             style={{ cursor: 'pointer' }}
                         />

@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Label, Tag, TagProps } from '@fluentui/react-components';
-import { Dismiss12Regular } from '@fluentui/react-icons';
 import { Attribute } from '../../interfaces/attributes';
 import { AuditFilters } from '../panel/filterspanel/FiltersPanel';
 

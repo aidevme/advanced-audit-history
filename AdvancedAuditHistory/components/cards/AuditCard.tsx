@@ -8,7 +8,8 @@ import {
     mergeClasses,
     tokens,
 } from "@fluentui/react-components";
-import { ArrowUndo16Regular } from "@fluentui/react-icons";
+
+import { Icons } from '../../tools/IconTools';
 import {
     Card,
     CardHeader,
@@ -96,9 +97,9 @@ export const AuditCard = ({ audit }: IAuditCardProps) => {
                             >
                                 <Button
                                     appearance="primary"
-                                    icon={<ArrowUndo16Regular fontSize={16} />}
+                                    icon={<Icons.Restore fontSize={16} />}
                                     onClick={() => void onRestoreAll(audit.attributes)}
-                                    style={{ 
+                                    style={{
                                         backgroundColor: getButtonColor(),
                                         borderColor: tokens.colorNeutralStroke1,
                                         color: '#000000'

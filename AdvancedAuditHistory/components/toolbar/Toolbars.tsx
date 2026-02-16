@@ -1,20 +1,10 @@
 import { Toolbar, ToolbarDivider, Spinner, makeStyles } from "@fluentui/react-components";
 import * as React from "react";
 import { useContext, useMemo, useCallback, useState } from "react";
-import {
-    ArrowClockwiseRegular,
-    ArrowSortDownLinesRegular,
-    ArrowSortUpLinesRegular,
-    SettingsRegular,
-    MaximizeRegular,
-    GridRegular,
-    CardUiRegular,
-    TimelineRegular,
-    ChartMultipleRegular
-} from '@fluentui/react-icons';
+import { Icons } from '../../tools/IconTools';
 
 import { ExportIcon, PDFIcon, DocumentIcon } from '@fluentui/react-icons-mdl2';
-import { Icons } from "../../tools/IconTools";
+
 import { ControlContext } from "../../context/control-context";
 import { AuditFilters } from "../panel/filterspanel/FiltersPanel";
 import { Audit } from "../../interfaces";
@@ -149,11 +139,11 @@ export const Toolbars: React.FC<IToolbarsProps> = ({
         }
     }, [audits]);
 
-    const handleExportPDF = useCallback(() => {
+    const handleExportPDF = useCallback(async () => {
         try {
             setIsExporting(true);
             setExportMessage('Exporting to PDF...');
-            ExportService.exportToPDF(audits);
+            await ExportService.exportToPDF(audits);
         } catch (error) {
             console.error('[Toolbars] PDF export failed:', error);
             alert(error instanceof Error ? error.message : 'Failed to export to PDF');
@@ -166,12 +156,12 @@ export const Toolbars: React.FC<IToolbarsProps> = ({
     const viewTypeOptions: MenuOption[] = useMemo(() => [
         {
             label: "Card",
-            icon: <CardUiRegular />,
+            icon: <Icons.Card />,
             onClick: () => onViewTypeChanged('card')
         },
         {
             label: "Card - Timeline",
-            icon: <TimelineRegular />,
+            icon: <Icons.Timeline />,
             onClick: () => onViewTypeChanged('card-timeline')
         }
     ], [onViewTypeChanged]);
@@ -180,18 +170,18 @@ export const Toolbars: React.FC<IToolbarsProps> = ({
     const exportOptions: MenuOption[] = useMemo(() => [
         {
             label: "Export to Excel",
-            icon: <DocumentIcon />,
+            icon: <Icons.Document />,
             onClick: () => void handleExportExcel()
         },
         {
             label: "Export to CSV",
-            icon: <DocumentIcon />,
+            icon: <Icons.Document />,
             onClick: handleExportCSV
         },
         {
             label: "Export to PDF",
-            icon: <PDFIcon />,
-            onClick: handleExportPDF
+            icon: <Icons.PDF />,
+            onClick: () => void handleExportPDF()
         }
     ], [handleExportExcel, handleExportCSV, handleExportPDF]);
 
@@ -211,7 +201,7 @@ export const Toolbars: React.FC<IToolbarsProps> = ({
                 {/* View Type Menu */}
                 <ToolbarMenuWithTooltip
                     tooltip={tooltips.viewType}
-                    triggerIcon={<GridRegular />}
+                    triggerIcon={<Icons.Grid />}
                     ariaLabel={ariaLabels.viewType}
                     idPrefix="toolbar-view-type"
                     options={viewTypeOptions}
@@ -221,7 +211,7 @@ export const Toolbars: React.FC<IToolbarsProps> = ({
                 {/* Analytics Dashboard Button - Temporarily Hidden */}
                 {/* <ToolbarButtonWithTooltip
                 tooltip={tooltips.analytics}
-                icon={<ChartMultipleRegular />}
+                icon={<Icons.ChartMultiple />}
                 onClick={onShowAnalytics}
                 idPrefix="toolbar-analytics"
                 ariaLabel={ariaLabels.analytics}
@@ -231,7 +221,7 @@ export const Toolbars: React.FC<IToolbarsProps> = ({
                 {/* Sort Button */}
                 <ToolbarButtonWithTooltip
                     tooltip={getSortTooltipText(order, resources)}
-                    icon={order === "ascending" ? <ArrowSortDownLinesRegular /> : <ArrowSortUpLinesRegular />}
+                    icon={order === "ascending" ? <Icons.SortDown16 /> : <Icons.SortUp16 />}
                     onClick={onOrderChanged}
                     idPrefix="toolbar-sort"
                 />
@@ -259,7 +249,7 @@ export const Toolbars: React.FC<IToolbarsProps> = ({
                 {/* Refresh Button */}
                 <ToolbarButtonWithTooltip
                     tooltip={tooltips.refresh}
-                    icon={<ArrowClockwiseRegular />}
+                    icon={<Icons.Refresh />}
                     onClick={onRefresh}
                     idPrefix="toolbar-refresh"
                 />
@@ -278,7 +268,7 @@ export const Toolbars: React.FC<IToolbarsProps> = ({
                 {/* Settings Button */}
                 <ToolbarButtonWithTooltip
                     tooltip={tooltips.settings}
-                    icon={<SettingsRegular />}
+                    icon={<Icons.Settings />}
                     onClick={onSettingsClick}
                     idPrefix="toolbar-settings"
                 />
@@ -287,7 +277,7 @@ export const Toolbars: React.FC<IToolbarsProps> = ({
                 {/* Maximize Button */}
                 <ToolbarButtonWithTooltip
                     tooltip={tooltips.maximize}
-                    icon={<MaximizeRegular />}
+                    icon={<Icons.Maximize />}
                     onClick={onMaximizeClick}
                     idPrefix="toolbar-maximize"
                 />

@@ -11,7 +11,7 @@ import {
     Tooltip,
 } from "@fluentui/react-components";
 import { Attribute, Lookup } from "../../interfaces/attributes";
-import { ArrowUndo16Regular, ArrowSortUp16Regular, ArrowSortDown16Regular } from "@fluentui/react-icons";
+import { Icons } from '../../tools/IconTools';
 import { useContext, useMemo, useState } from "react";
 import { FilterContext } from "../../context/filter-context";
 import { ControlContext } from "../../context/control-context";
@@ -47,21 +47,25 @@ export const AuditAttributes = ({ attributes }: IProps) => {
         const filtered = attributes.filter((attr) => attr.displayName)
 
         const getValueForSort = (attr: Attribute, column: SortColumn): string => {
-            if (column === "field") return attr.displayName ?? "";
-            if (column === "fieldType") return getAttributeTypeName(attr.attributeType as number | undefined) ?? "";
+            if (column === "field") return String(attr.displayName ?? "");
+            if (column === "fieldType") return String(getAttributeTypeName(attr.attributeType as number | undefined) ?? "");
             if (column === "oldValue") {
-                if (typeof attr.oldValue === "object") return (attr.oldValue as Lookup)?.name ?? "";
+                if (typeof attr.oldValue === "object") return String((attr.oldValue as Lookup)?.name ?? "");
                 return String(attr.oldValue ?? "");
             }
             if (column === "newValue") {
-                if (typeof attr.newValue === "object") return (attr.newValue as Lookup)?.name ?? "";
+                if (typeof attr.newValue === "object") return String((attr.newValue as Lookup)?.name ?? "");
                 return String(attr.newValue ?? "");
             }
             return "";
         };
 
         const sorted = [...filtered].sort((a, b) => {
-            if (!sortColumn) return a.displayName!.localeCompare(b.displayName!);
+            if (!sortColumn) {
+                const aName = String(a.displayName ?? "");
+                const bName = String(b.displayName ?? "");
+                return aName.localeCompare(bName);
+            }
 
             const aValue = getValueForSort(a, sortColumn);
             const bValue = getValueForSort(b, sortColumn);
@@ -114,8 +118,8 @@ export const AuditAttributes = ({ attributes }: IProps) => {
                                             <b>{resources.getString(column.key)}</b>
                                             {column.sortKey && sortColumn === column.sortKey && (
                                                 sortDirection === "asc" ?
-                                                    <ArrowSortUp16Regular /> :
-                                                    <ArrowSortDown16Regular />
+                                                    <Icons.SortUp16 /> :
+                                                    <Icons.SortDown16 />
                                             )}
                                         </div>
                                     </TableHeaderCell>
@@ -188,7 +192,7 @@ export const AuditAttributes = ({ attributes }: IProps) => {
                                     >
                                         <Button
                                             appearance="secondary"
-                                            icon={<ArrowUndo16Regular fontSize={16} />}
+                                            icon={<Icons.Restore fontSize={16} />}
                                             onClick={() => void onRestore(attribute)}
                                         />
                                     </Tooltip>

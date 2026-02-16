@@ -1,11 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest>
-  <control namespace="AIDEVME.CRM.Pcf" constructor="AdvancedAuditHistory" version="0.0.43" display-name-key="AdvancedAuditHistory" description-key="AdvancedAuditHistory description" control-type="virtual">
+  <control namespace="AIDEVME.CRM.Pcf" constructor="AdvancedAuditHistory" version="0.0.49"
+    display-name-key="AdvancedAuditHistory_Display_Key"
+    description-key="AdvancedAuditHistory_Desc_Key"
+    control-type="virtual">
     <external-service-usage enabled="false">
     </external-service-usage>
-    <!-- property node identifies a specific, configurable piece of data that the control expects
-    from CDS -->
-    <property name="advancedAuditHistoryBoundField" display-name-key="advancedAuditHistoryBoundField" description-key="Field where the pcf will be displayed" of-type="SingleLine.Text" usage="bound" required="true" />
+    <property name="advancedAuditHistoryBoundField"
+      display-name-key="advancedAuditHistoryBoundField_Display_Key"
+      description-key="advancedAuditHistoryBoundField_Desc_Key" of-type-group="boundFieldTypes"
+      usage="bound" required="true" />
+    <property name="configurationParameters" display-name-key="configurationParameters_Display_Key"
+      description-key="configurationParameters_Desc_Key" of-type="Multiple" usage="input"
+      required="false" />
+    <type-group name="boundFieldTypes">
+      <type>SingleLine.Text</type>
+      <type>Lookup.Simple</type>
+    </type-group>
     <resources>
       <code path="index.ts" order="1" />
       <platform-library name="React" version="16.14.0" />

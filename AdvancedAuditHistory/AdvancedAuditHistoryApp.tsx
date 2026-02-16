@@ -3,83 +3,37 @@ import {
     FluentProvider,
     webLightTheme,
     IdPrefixProvider,
-    Dialog,
-    DialogSurface,
-    DialogBody,
-    DialogActions,
-    Button,
-    Spinner,
-    makeStyles
+    Spinner
 } from "@fluentui/react-components";
 import { IInputs } from "./generated/ManifestTypes";
 import { ControlContext } from "./context/control-context";
 import History from "./components/history";
 import { useDataverse } from "./hooks";
-import Header, { DateRange } from "./components/header/header";
+import Header, { DateRange } from "./components/header/Header";
 import { useMemo, useState, useEffect } from "react";
 import { FilterContext } from "./context/filter-context";
 import { sortAudits } from "./utils/utils";
 import { AuditFilters } from "./components/panel/filterspanel/FiltersPanel";
-import { AuditAnalyticsDashboard } from "./components/dashboards";
 import { SecurityService } from "./services/SecurityService/SecurityService";
 import { ErrorPanel, ERROR_PANEL_TYPES } from "./components/panel/errorpanel/ErrorPanel";
 import { ExtendedMode } from "./interfaces/pcf";
-
-const useAdvancedAuditHistoryAppStyles = makeStyles({
-    root: {
-        width: '100%'
-    },
-    spinnerContainer: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        width: '100%',
-        backgroundColor: 'rgba(128, 128, 128, 0.3)',
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        zIndex: 9999
-    },
-    spinnerContainerNoOverlay: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        width: '100%'
-    },
-    errorContainer: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        width: '100%',
-        padding: '20px'
-    },
-    noDataContainer: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '40px 20px'
-    },
-    contentContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '16px',
-        padding: '2px'
-    },
-    dialogSurface: {
-        maxWidth: '95vw',
-        width: '1400px',
-        maxHeight: '90vh'
-    }
-});
+import { useAdvancedAuditHistoryAppStyles } from "./styles/AdvancedAuditHistoryAppStyle";
 
 export interface IAdvancedAuditHistoryAppProps {
-    context: ComponentFramework.Context<IInputs>
+    context: ComponentFramework.Context<IInputs>;
+    /**
+     * Configuration parameters passed from the control manifest.
+     * Type: Multiple (array of configuration values)
+     */
+    configurationParameters?: unknown[];
+    /**
+     * The type of the bound field from the control manifest.
+     * Values: "SingleLine.Text" or "Lookup.Simple"
+     */
+    boundFieldType?: "SingleLine.Text" | "Lookup.Simple";
 }
 
-export default function AdvancedAuditHistoryApp({ context }: IAdvancedAuditHistoryAppProps) {
+export default function AdvancedAuditHistoryApp({ context, configurationParameters, boundFieldType }: IAdvancedAuditHistoryAppProps) {
     const styles = useAdvancedAuditHistoryAppStyles();
     const { formatting, parameters, resources } = context;
     const { isLoading, attributes, audits, record, onRefresh } = useDataverse(context);
@@ -89,10 +43,10 @@ export default function AdvancedAuditHistoryApp({ context }: IAdvancedAuditHisto
     const [advancedFilters, setAdvancedFilters] = useState<AuditFilters | null>(null);
     const [viewType, setViewType] = useState<'card' | 'card-timeline'>('card');
     const [searchTerm, setSearchTerm] = useState('');
-    const [showAnalytics, setShowAnalytics] = useState(false);
+
 
     // Check if running in test harness or design mode
-    const isTestHarness = (context.mode as ExtendedMode).isAuthoringMode !== true;
+    const isTestHarness = (context.mode as ExtendedMode).isAuthoringMode !== false;
 
     // Debug logging
     console.log('[AdvancedAuditHistory] Test Harness Mode:', isTestHarness);
@@ -341,7 +295,6 @@ export default function AdvancedAuditHistoryApp({ context }: IAdvancedAuditHisto
                                             onFiltersApplied={setAdvancedFilters}
                                             onViewTypeChanged={setViewType}
                                             onSearchChanged={setSearchTerm}
-                                            onShowAnalytics={() => setShowAnalytics(true)}
                                             users={uniqueUsers}
                                             availableActionTypes={availableActionTypes}
                                             earliestAuditDate={earliestAuditDate}
@@ -354,35 +307,7 @@ export default function AdvancedAuditHistoryApp({ context }: IAdvancedAuditHisto
                         </FilterContext.Provider>
                     </ControlContext.Provider>
 
-                    {/* Analytics Dashboard Dialog */}
-                    <Dialog
-                        open={showAnalytics}
-                        onOpenChange={(event, data) => setShowAnalytics(data.open)}
-                        modalType="non-modal"
-                    >
-                        <DialogSurface className={styles.dialogSurface}>
-                            <DialogBody>
-                                <AuditAnalyticsDashboard
-                                    audits={filteredAudits}
-                                    dateRange={dateRange.startDate && dateRange.endDate ? {
-                                        from: dateRange.startDate,
-                                        to: dateRange.endDate
-                                    } : undefined}
-                                    isLoading={isLoading}
-                                    onRefresh={() => { void onRefresh(); }}
-                                    onExport={(format) => console.log('Export analytics:', format)}
-                                />
-                            </DialogBody>
-                            <DialogActions>
-                                <Button
-                                    appearance="primary"
-                                    onClick={() => setShowAnalytics(false)}
-                                >
-                                    Close
-                                </Button>
-                            </DialogActions>
-                        </DialogSurface>
-                    </Dialog>
+
                 </FluentProvider>
             </IdPrefixProvider>
         </div>

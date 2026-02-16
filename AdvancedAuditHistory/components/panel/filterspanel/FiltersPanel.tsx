@@ -17,7 +17,7 @@ import {
     useId,
 } from "@fluentui/react-components";
 import { DatePicker } from "@fluentui/react-datepicker-compat";
-import { Dismiss24Regular, SearchRegular } from "@fluentui/react-icons";
+import { Icons } from '../../../tools/IconTools';
 import * as React from "react";
 import { useState } from "react";
 import { Attribute } from "../../../interfaces";
@@ -185,7 +185,7 @@ const FiltersPanel: React.FC<IFiltersPanelProps> = ({
                         <Button
                             appearance="subtle"
                             aria-label="Close"
-                            icon={<Dismiss24Regular />}
+                            icon={<Icons.Dismiss24 />}
                             onClick={onClose}
                         />
                     }

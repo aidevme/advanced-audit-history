@@ -1,7 +1,7 @@
 // AdvancedAuditHistory\services\ExportService\ExportService.ts
 import { Audit } from "../../interfaces";
-import * as ExcelJS from 'exceljs';
-import jsPDF from 'jspdf';
+import type { Row } from 'exceljs';
+import type { jsPDF as JsPDFInstance } from 'jspdf';
 
 /**
  * Configuration options for export operations
@@ -70,7 +70,7 @@ interface TransformedAuditData {
  * });
  * 
  * // Export to PDF
- * ExportService.exportToPDF(audits, 'audit-history.pdf');
+ * await ExportService.exportToPDF(audits, 'audit-history.pdf');
  * ```
  */
 export class ExportService {
@@ -210,7 +210,8 @@ export class ExportService {
             // Validate input
             this.validateExportData(audits, options?.maxRows);
 
-            const workbook = new ExcelJS.Workbook();
+            const ExcelJSImport = await import('exceljs');
+            const workbook = new ExcelJSImport.Workbook();
             const worksheet = workbook.addWorksheet('Audit History');
 
             // Set workbook metadata if requested
@@ -272,12 +273,13 @@ export class ExportService {
      * 
      * @throws {Error} If export fails or exceeds maximum row limit
      */
-    static exportToPDF(audits: Audit[], filename = 'audit-history.pdf', options?: ExportOptions): void {
+    static async exportToPDF(audits: Audit[], filename = 'audit-history.pdf', options?: ExportOptions): Promise<void> {
         try {
             // Validate input
             this.validateExportData(audits, options?.maxRows);
 
-            const doc = new jsPDF({ orientation: this.PDF_CONFIG.ORIENTATION });
+            const { default: JsPDF } = await import('jspdf');
+            const doc = new JsPDF({ orientation: this.PDF_CONFIG.ORIENTATION });
             const pageWidth = doc.internal.pageSize.getWidth();
             const pageHeight = doc.internal.pageSize.getHeight();
             let yPosition: number = this.PDF_CONFIG.MARGIN;
@@ -383,7 +385,7 @@ export class ExportService {
      * 
      * @param headerRow - ExcelJS Row object to style
      */
-    private static styleExcelHeader(headerRow: ExcelJS.Row): void {
+    private static styleExcelHeader(headerRow: Row): void {
         headerRow.font = {
             bold: true,
             color: { argb: this.EXCEL_CONFIG.HEADER_TEXT_COLOR }
@@ -405,7 +407,7 @@ export class ExportService {
      * @param startY - Starting Y position
      * @returns New Y position after rendering
      */
-    private static renderPDFHeader(doc: jsPDF, recordCount: number, startY: number): number {
+    private static renderPDFHeader(doc: JsPDFInstance, recordCount: number, startY: number): number {
         let yPos = startY;
 
         // Title
@@ -433,7 +435,7 @@ export class ExportService {
      * @param startY - Starting Y position
      * @returns New Y position after rendering
      */
-    private static renderPDFTableHeader(doc: jsPDF, pageWidth: number, startY: number): number {
+    private static renderPDFTableHeader(doc: JsPDFInstance, pageWidth: number, startY: number): number {
         let yPos = startY;
         let xPos = this.PDF_CONFIG.MARGIN;
 
@@ -478,7 +480,7 @@ export class ExportService {
      * @returns Final Y position
      */
     private static renderPDFTableRows(
-        doc: jsPDF,
+        doc: JsPDFInstance,
         audits: Audit[],
         pageWidth: number,
         pageHeight: number,
@@ -541,7 +543,7 @@ export class ExportService {
      * @param pageWidth - Page width
      * @param pageHeight - Page height
      */
-    private static addPDFPageFooters(doc: jsPDF, pageWidth: number, pageHeight: number): void {
+    private static addPDFPageFooters(doc: JsPDFInstance, pageWidth: number, pageHeight: number): void {
         const totalPages = doc.internal.pages.length - 1;
         for (let i = 1; i <= totalPages; i++) {
             doc.setPage(i);

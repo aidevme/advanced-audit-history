@@ -17,7 +17,7 @@ const useDataverse = (context: ComponentFramework.Context<IInputs>) => {
     const [audits, setAudits] = useState<Audit[]>([]);
 
     // Detect test harness environment using ExtendedMode interface
-    const isTestHarness = (context.mode as ExtendedMode).isAuthoringMode !== true;
+    const isTestHarness = (context.mode as ExtendedMode).isAuthoringMode !== false;
 
     const record = useMemo(() => {
         const mode = context?.mode as ExtendedMode;
