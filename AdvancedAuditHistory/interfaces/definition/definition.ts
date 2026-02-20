@@ -7,6 +7,10 @@ export default interface EntityDefinition {
     AttributeTypeName?: {
         Value: string;
     };
+    Format?: string;
+    FormatName?: {
+        Value: string;
+    };
     IsAuditEnabled?: {
         Value: boolean;
         CanBeChanged: boolean;

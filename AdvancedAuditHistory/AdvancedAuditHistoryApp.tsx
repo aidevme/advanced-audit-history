@@ -18,6 +18,7 @@ import { SecurityService } from "./services/SecurityService/SecurityService";
 import { ErrorPanel, ERROR_PANEL_TYPES } from "./components/panel/errorpanel/ErrorPanel";
 import { ExtendedMode } from "./interfaces/pcf";
 import { useAdvancedAuditHistoryAppStyles } from "./styles/AdvancedAuditHistoryAppStyle";
+import { Attribute } from "./interfaces";
 
 export interface IAdvancedAuditHistoryAppProps {
     context: ComponentFramework.Context<IInputs>;
@@ -208,21 +209,21 @@ export default function AdvancedAuditHistoryApp({ context, configurationParamete
             attributes
             : attributes.filter((attr) => filter.some((field) => field == attr.logicalName))
 
-        return data.filter((item) => item.displayName)
-            .sort((a, b) => a.displayName!.localeCompare(b.displayName!))
+        return data.filter((item): item is Attribute & { displayName: string } => !!item.displayName)
+            .sort((a, b) => a.displayName.localeCompare(b.displayName))
     }, [attributes, filter])
 
     const uniqueUsers = useMemo(() => {
         const users = audits
             .map(audit => audit.user?.name)
-            .filter((name): name is string => !!name);
+            .filter((name): name is string => typeof name === 'string');
         return Array.from(new Set(users)).sort();
     }, [audits])
 
     const availableActionTypes = useMemo(() => {
         const actionTypes = audits
             .map(audit => audit.operation?.toString())
-            .filter((action): action is string => !!action);
+            .filter((action): action is string => typeof action === 'string');
         return Array.from(new Set(actionTypes));
     }, [audits])
 

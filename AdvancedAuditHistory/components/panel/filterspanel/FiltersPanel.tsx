@@ -287,6 +287,21 @@ const FiltersPanel: React.FC<IFiltersPanelProps> = ({
                             </Field>
                         </div>
 
+                        {(startDate !== null || endDate !== null) && (
+                            <div style={{
+                                fontSize: 13,
+                                color: '#323130',
+                                marginTop: 8,
+                                padding: '8px 12px',
+                                backgroundColor: '#F3F2F1',
+                                borderRadius: 4,
+                                fontWeight: 500
+                            }}>
+                                <strong>Selected Range: </strong>
+                                {startDate !== null ? startDate.toLocaleDateString() : 'Not set'} - {endDate !== null ? endDate.toLocaleDateString() : 'Not set'}
+                            </div>
+                        )}
+
                         <div style={{ fontSize: 12, color: '#605E5C', marginTop: 8 }}>
                             Filter audit records within the specified date range
                         </div>

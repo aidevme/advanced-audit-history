@@ -53,16 +53,30 @@ const Header = ({ audits, order, attributes, onFieldsChanged, onDateRangeSelecte
     const onApplyFilters = (filters: AuditFilters) => {
         setActiveFilters(filters);
         onFiltersApplied(filters);
+
+        // Update date range when filters are applied
+        onDateRangeSelected({
+            startDate: filters.startDate,
+            endDate: filters.endDate
+        });
+
         console.log("Filters applied:", filters);
     }
 
     const onClearAllFilters = () => {
         setActiveFilters(null);
         onFiltersApplied(null);
+
+        // Reset date range when all filters are cleared
+        onDateRangeSelected({
+            startDate: undefined,
+            endDate: undefined
+        });
+
         console.log("All filters cleared");
     }
 
-    const onDismissFilter = (filterType: 'user' | 'attribute' | 'actionType' | 'operationType' | 'minChanges', value?: string) => {
+    const onDismissFilter = (filterType: 'user' | 'attribute' | 'actionType' | 'operationType' | 'minChanges' | 'dateRange', value?: string) => {
         if (!activeFilters) return;
 
         const updatedFilters = { ...activeFilters };
@@ -93,6 +107,10 @@ const Header = ({ audits, order, attributes, onFieldsChanged, onDateRangeSelecte
             case 'minChanges':
                 updatedFilters.minChangesCount = undefined;
                 break;
+            case 'dateRange':
+                updatedFilters.startDate = undefined;
+                updatedFilters.endDate = undefined;
+                break;
         }
 
         // Check if any filters remain
@@ -103,9 +121,21 @@ const Header = ({ audits, order, attributes, onFieldsChanged, onDateRangeSelecte
         if (hasRemainingFilters) {
             setActiveFilters(updatedFilters);
             onFiltersApplied(updatedFilters);
+
+            // Update date range when filters are modified
+            onDateRangeSelected({
+                startDate: updatedFilters.startDate,
+                endDate: updatedFilters.endDate
+            });
         } else {
             setActiveFilters(null);
             onFiltersApplied(null);
+
+            // Reset date range when no filters remain
+            onDateRangeSelected({
+                startDate: undefined,
+                endDate: undefined
+            });
         }
 
         console.log(`Filter dismissed: ${filterType}`, value);

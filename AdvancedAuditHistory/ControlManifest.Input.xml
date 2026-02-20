@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest>
-  <control namespace="AIDEVME.CRM.Pcf" constructor="AdvancedAuditHistory" version="0.0.49"
+  <control namespace="AIDEVME.CRM.Pcf" constructor="AdvancedAuditHistory" version="0.0.52"
     display-name-key="AdvancedAuditHistory_Display_Key"
     description-key="AdvancedAuditHistory_Desc_Key"
     control-type="virtual">

@@ -30,6 +30,11 @@ export const TimelineView: React.FC<ITimelineViewProps> = ({ audits }) => {
     const cardRefs = useRef<Map<string, HTMLDivElement>>(new Map());
 
     useEffect(() => {
+        // Show all cards immediately when audits change
+        const allCardIds = new Set(audits.map(audit => audit.id));
+        setVisibleCards(allCardIds);
+
+        // Set up intersection observer for scroll animations
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
@@ -47,20 +52,20 @@ export const TimelineView: React.FC<ITimelineViewProps> = ({ audits }) => {
             }
         );
 
-        cardRefs.current.forEach((element) => {
-            if (element) {
-                observer.observe(element);
-            }
-        });
+        // Observe all card elements for future scroll events
+        const timeoutId = setTimeout(() => {
+            cardRefs.current.forEach((element) => {
+                if (element) {
+                    observer.observe(element);
+                }
+            });
+        }, 50);
 
         return () => {
+            clearTimeout(timeoutId);
             observer.disconnect();
         };
     }, [audits]);
-
-    if (!audits || audits.length === 0) {
-        return null;
-    }
 
     return (
         <>
@@ -129,7 +134,11 @@ export const TimelineView: React.FC<ITimelineViewProps> = ({ audits }) => {
                                 {isLeft ? (
                                     <div
                                         ref={(el) => {
-                                            if (el) cardRefs.current.set(audit.id, el);
+                                            if (el) {
+                                                cardRefs.current.set(audit.id, el);
+                                            } else {
+                                                cardRefs.current.delete(audit.id);
+                                            }
                                         }}
                                         data-card-id={audit.id}
                                         style={{
@@ -234,7 +243,11 @@ export const TimelineView: React.FC<ITimelineViewProps> = ({ audits }) => {
                                 {!isLeft ? (
                                     <div
                                         ref={(el) => {
-                                            if (el) cardRefs.current.set(audit.id, el);
+                                            if (el) {
+                                                cardRefs.current.set(audit.id, el);
+                                            } else {
+                                                cardRefs.current.delete(audit.id);
+                                            }
                                         }}
                                         data-card-id={audit.id}
                                         style={{

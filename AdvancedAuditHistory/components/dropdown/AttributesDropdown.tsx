@@ -1,6 +1,6 @@
 import { Dropdown, Option, OptionOnSelectData, SelectionEvents, useId } from "@fluentui/react-components";
 import * as React from "react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { Attribute } from "../../interfaces";
 import { getAttributeTypeIcon } from "./attributeTypeIcon";
 import { useAttributesDropdownStyles } from "./AttributesDropdown.styles";
@@ -42,6 +42,24 @@ const AttributesDropdown: React.FC<IAttributesDropdownProps> = ({
     const dropdownId = useId('attributes-dropdown');
     const [selectedFields, setSelectedFields] = useState<string[]>([]);
     const [open, setOpen] = useState(false);
+    const [filterText, setFilterText] = useState<string>("");
+
+    // Log attribute data when attributes are received
+    useEffect(() => {
+        if (attributes.length > 0) {
+            console.log('AttributesDropdown - Received attributes:', attributes.length);
+            attributes.forEach((attr) => {
+                const logData = {
+                    displayName: attr.displayName ?? '',
+                    logicalName: attr.logicalName,
+                    isAuditEnabled: attr.isAuditEnabled ?? false,
+                    format: attr.format ?? 'undefined',
+                    formatName: attr.formatName ?? 'undefined'
+                };
+                console.log(logData);
+            });
+        }
+    }, [attributes]);
 
     const onFieldSelected = (_event: SelectionEvents, data: OptionOnSelectData) => {
         const selected = data.selectedOptions;
@@ -53,11 +71,27 @@ const AttributesDropdown: React.FC<IAttributesDropdownProps> = ({
         setOpen(data.open);
     };
 
+    const onInput = (e: React.FormEvent<HTMLButtonElement>) => {
+        const value = (e.target as HTMLInputElement).value;
+        setFilterText(value);
+    };
+
     const sortedAttributes = useMemo(() => {
         return attributes
             .filter((item) => item.displayName)
             .sort((a, b) => a.displayName!.localeCompare(b.displayName!));
     }, [attributes]);
+
+    const filteredAttributes = useMemo(() => {
+        if (!filterText) {
+            return sortedAttributes;
+        }
+        const lowerFilter = filterText.toLowerCase();
+        return sortedAttributes.filter((attr) =>
+            (attr.displayName?.toLowerCase().startsWith(lowerFilter) ?? false) ||
+            attr.logicalName.toLowerCase().startsWith(lowerFilter)
+        );
+    }, [sortedAttributes, filterText]);
 
     return (
         <Dropdown
@@ -65,6 +99,7 @@ const AttributesDropdown: React.FC<IAttributesDropdownProps> = ({
             multiselect
             clearable
             placeholder={placeholder}
+            onInput={onInput}
             selectedOptions={selectedFields}
             onOptionSelect={onFieldSelected}
             open={open}
@@ -72,7 +107,7 @@ const AttributesDropdown: React.FC<IAttributesDropdownProps> = ({
             className={styles.dropdown}
             disabled={isReadOnly}
         >
-            {sortedAttributes.map((attribute) => {
+            {filteredAttributes.map((attribute) => {
                 const displayText = `${attribute.displayName ?? attribute.logicalName} (${attribute.attributeTypeName ?? 'Unknown'})`;
                 const optionText = attribute.isAuditEnabled
                     ? displayText

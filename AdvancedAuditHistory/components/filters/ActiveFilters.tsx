@@ -6,7 +6,7 @@ import { AuditFilters } from '../panel/filterspanel/FiltersPanel';
 interface IActiveFiltersProps {
     activeFilters: AuditFilters | null;
     attributes: Attribute[];
-    onDismissFilter: (filterType: 'user' | 'attribute' | 'actionType' | 'operationType' | 'minChanges', value?: string) => void;
+    onDismissFilter: (filterType: 'user' | 'attribute' | 'actionType' | 'operationType' | 'minChanges' | 'dateRange', value?: string) => void;
 }
 
 export const ActiveFilters: React.FC<IActiveFiltersProps> = ({ activeFilters, attributes, onDismissFilter }) => {
@@ -81,6 +81,18 @@ export const ActiveFilters: React.FC<IActiveFiltersProps> = ({ activeFilters, at
                     dismissIcon={{ onClick: () => onDismissFilter('minChanges') }}
                 >
                     Min Changes: {activeFilters.minChangesCount}
+                </Tag>
+            )}
+            {(activeFilters?.startDate !== undefined || activeFilters?.endDate !== undefined) && (
+                <Tag
+                    appearance="filled"
+                    color="informative"
+                    shape="rounded"
+                    size="small"
+                    dismissible
+                    dismissIcon={{ onClick: () => onDismissFilter('dateRange') }}
+                >
+                    Date Range: {activeFilters.startDate ? activeFilters.startDate.toLocaleDateString() : 'Start'} - {activeFilters.endDate ? activeFilters.endDate.toLocaleDateString() : 'End'}
                 </Tag>
             )}
         </div>

@@ -5,6 +5,8 @@ export default interface AttributeMetada {
     displayName: string;
     attributeType?: AttributeTypeCode;
     attributeTypeName?: string;
+    format?: string;
+    formatName?: string;
     isAuditEnabled?: boolean;
     isValidForRead?: boolean;
     isValidForCreate?: boolean;

@@ -6,6 +6,8 @@ export default interface Attribute {
     displayName?: string | null,
     attributeType?: AttributeTypeCode,
     attributeTypeName?: string,
+    format?: string,
+    formatName?: string,
     isAuditEnabled?: boolean,
     isValidForRead?: boolean,
     isValidForCreate?: boolean,

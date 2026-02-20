@@ -13,7 +13,7 @@ import { AttributeTypeCode } from "../enums/AttributeTypeCode";
 
 const useDataverse = (context: ComponentFramework.Context<IInputs>) => {
     const [isLoading, setIsLoading] = useState(true);
-    const [attributes, setAttributes] = useState<Attribute[]>([]);
+    const [attributes, setAttributes] = useState<AttributeMetada[]>([]);
     const [audits, setAudits] = useState<Audit[]>([]);
 
     // Detect test harness environment using ExtendedMode interface
@@ -38,7 +38,7 @@ const useDataverse = (context: ComponentFramework.Context<IInputs>) => {
             if (isTestHarness) {
                 // Load mock data for test harness
                 const { mockAttributes, mockAudits } = await import('../mocks/mockData');
-                setAttributes(mockAttributes);
+                setAttributes(mockAttributes as AttributeMetada[]);
                 setAudits(mockAudits);
                 setIsLoading(false);
             } else {
@@ -55,8 +55,23 @@ const useDataverse = (context: ComponentFramework.Context<IInputs>) => {
     }, [isTestHarness])
 
     const getAttributes = async (): Promise<AttributeMetada[]> => {
+        // Define the attributes to select from the API
+        const selectedAttributeFields: string[] = [
+            'LogicalName',
+            'DisplayName',
+            'AttributeType',
+            'AttributeTypeName',
+            'IsAuditEnabled',
+            'IsValidForRead',
+            'IsValidForCreate',
+            'IsValidForUpdate'
+        ];
+
+        // Note: Format and FormatName are not included in $select because they're type-specific properties
+        // (only on StringAttributeMetadata, DateTimeAttributeMetadata, etc., not on base AttributeMetadata).
+        // However, the API automatically returns them for attribute types that have these properties.
         const result = await xrmService.fetch(
-            `api/data/v9.1/EntityDefinitions(LogicalName='${record.entityLogicalName}')/Attributes?$select=LogicalName,DisplayName,AttributeType,AttributeTypeName,IsAuditEnabled,IsValidForRead,IsValidForCreate,IsValidForUpdate&$filter=AttributeOf eq null&$orderby=DisplayName asc`,
+            `api/data/v9.2/EntityDefinitions(LogicalName='${record.entityLogicalName}')/Attributes?$select=${selectedAttributeFields.join(',')}&$filter=AttributeOf eq null&$orderby=DisplayName asc`,
         ) as EntityDefinition[];
 
         return result.filter(item => item.LogicalName && !item.LogicalName.includes("_composite"))
@@ -66,6 +81,8 @@ const useDataverse = (context: ComponentFramework.Context<IInputs>) => {
                     displayName: item.DisplayName.UserLocalizedLabel?.Label,
                     attributeType: item.AttributeType as AttributeTypeCode | undefined,
                     attributeTypeName: item.AttributeTypeName?.Value,
+                    format: item.Format,  // Available on StringAttributeMetadata, DateTimeAttributeMetadata, etc.
+                    formatName: item.FormatName?.Value,  // Available on specific attribute types
                     isAuditEnabled: item.IsAuditEnabled?.Value ?? false,
                     isValidForRead: item.IsValidForRead ?? true,
                     isValidForCreate: item.IsValidForCreate ?? true,
@@ -74,7 +91,7 @@ const useDataverse = (context: ComponentFramework.Context<IInputs>) => {
             });
     }
 
-    const getAudit = async (attributes: Attribute[]): Promise<Audit[]> => {
+    const getAudit = async (attributes: AttributeMetada[]): Promise<Audit[]> => {
         const request: XrmRequest = {
             Target: {
                 "@odata.type": `Microsoft.Dynamics.CRM.${record.entityLogicalName}`,
@@ -103,11 +120,13 @@ const useDataverse = (context: ComponentFramework.Context<IInputs>) => {
                     oldValue.includes(`_${attributeMetadata.logicalName}_value`)
             }
             )?.map((attributeMetadata) => {
-                return {
+                const mappedAttribute: Attribute = {
                     logicalName: attributeMetadata.logicalName,
                     displayName: attributeMetadata.displayName,
                     attributeType: attributeMetadata.attributeType,
                     attributeTypeName: attributeMetadata.attributeTypeName,
+                    format: attributeMetadata.format,
+                    formatName: attributeMetadata.formatName,
                     isAuditEnabled: attributeMetadata.isAuditEnabled,
                     isValidForRead: attributeMetadata.isValidForRead,
                     oldValue: oldValue.includes(attributeMetadata.logicalName)
@@ -129,6 +148,7 @@ const useDataverse = (context: ComponentFramework.Context<IInputs>) => {
                             } as Lookup
                             : "",
                 };
+                return mappedAttribute;
             })
 
             return {

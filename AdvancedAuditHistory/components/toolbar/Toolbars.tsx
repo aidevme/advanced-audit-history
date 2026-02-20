@@ -208,15 +208,7 @@ export const Toolbars: React.FC<IToolbarsProps> = ({
                 />
                 <ToolbarDivider />
 
-                {/* Analytics Dashboard Button - Temporarily Hidden */}
-                {/* <ToolbarButtonWithTooltip
-                tooltip={tooltips.analytics}
-                icon={<Icons.ChartMultiple />}
-                onClick={onShowAnalytics}
-                idPrefix="toolbar-analytics"
-                ariaLabel={ariaLabels.analytics}
-            />
-            <ToolbarDivider /> */}
+
 
                 {/* Sort Button */}
                 <ToolbarButtonWithTooltip

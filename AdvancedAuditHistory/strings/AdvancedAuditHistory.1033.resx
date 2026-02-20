@@ -122,6 +122,30 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0,
       Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AdvancedAuditHistory_Display_Key" xml:space="preserve">
+    <value>Advanced Audit History</value>
+    <comment>Display name for the Advanced Audit History control</comment>
+  </data>
+  <data name="AdvancedAuditHistory_Desc_Key" xml:space="preserve">
+    <value>Enterprise-grade audit history control with advanced filtering, analytics, and visualization capabilities</value>
+    <comment>Description for the Advanced Audit History control</comment>
+  </data>
+  <data name="advancedAuditHistoryBoundField_Display_Key" xml:space="preserve">
+    <value>Bound Field</value>
+    <comment>Display name for the bound field property</comment>
+  </data>
+  <data name="advancedAuditHistoryBoundField_Desc_Key" xml:space="preserve">
+    <value>The field to bind the control to (required for PCF framework)</value>
+    <comment>Description for the bound field property</comment>
+  </data>
+  <data name="configurationParameters_Display_Key" xml:space="preserve">
+    <value>Configuration Parameters</value>
+    <comment>Display name for configuration parameters</comment>
+  </data>
+  <data name="configurationParameters_Desc_Key" xml:space="preserve">
+    <value>Optional configuration parameters for customizing control behavior</value>
+    <comment>Description for configuration parameters</comment>
+  </data>
   <data name="advanced-audit-history-dropdown-placeholder" xml:space="preserve">
     <value>Choose fields to filter the audit history</value>
     <comment/>
