@@ -16,7 +16,17 @@ import {
     TextFieldIcon,
     TextBoxIcon,
     DropdownIcon,
+    ToggleLeftIcon,
+    NumberFieldIcon,
+    DecimalsIcon,
+    CircleHalfFullIcon,
+    SearchIcon,
+    ProfileSearchIcon,
+    ContactIcon,
+    PageIcon,
+    Photo2Icon,
 
+    AllCurrencyIcon,
 
     ClearFilterIcon,
     DocumentIcon,
@@ -65,14 +75,34 @@ export const Icons = {
 
 
     // Attribute Type Icons
+    // Unique Identifier
     UniqiueIdentifier: TextCalloutIcon,
+    // Lookup types
+    Lookup: SearchIcon,
+    Customer: ProfileSearchIcon,
+    Owner: ContactIcon,
+    // Text fields
     TextField: TextFieldIcon,
     MultipleTextField: TextBoxIcon,
-    Choice: DropdownIcon,
+    // Number fields
+    WholeNumber: NumberFieldIcon,
+    DecimalNumber: DecimalsIcon,
+    FloatingPointNumber: CircleHalfFullIcon,
 
+    // Currency fields
+    Currency: AllCurrencyIcon,
+
+    // Choice fields
+    Choice: DropdownIcon,
+    YesNo: ToggleLeftIcon,
+
+    // File fields
+    File: PageIcon,
+    Image: Photo2Icon,
 
 
     Question: createFluentIcon('QuestionCircleRegular', "1em", ["M10 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16Zm0 1a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm0 10.5a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5Zm0-8a2.5 2.5 0 0 1 1.65 4.38l-.15.12-.22.17-.09.07-.16.15c-.33.36-.53.85-.53 1.61a.5.5 0 0 1-1 0 3.2 3.2 0 0 1 1.16-2.62l.25-.19.12-.1A1.5 1.5 0 0 0 10 6.5c-.83 0-1.5.67-1.5 1.5a.5.5 0 0 1-1 0A2.5 2.5 0 0 1 10 5.5Z"]),
+    Info: createFluentIcon('Info16Regular', "16", ["M8 1a7 7 0 1 1 0 14A7 7 0 0 1 8 1Zm0 1a6 6 0 1 0 0 12A6 6 0 0 0 8 2Zm0 3a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 8 5Zm0 7a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z"]),
 
 } as const;
 

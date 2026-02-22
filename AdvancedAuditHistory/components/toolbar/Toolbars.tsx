@@ -1,4 +1,5 @@
-import { Toolbar, ToolbarDivider, Spinner, makeStyles } from "@fluentui/react-components";
+// AdvancedAuditHistory\components\toolbar\Toolbars.tsx
+import { Toolbar, ToolbarDivider, Spinner } from "@fluentui/react-components";
 import * as React from "react";
 import { useContext, useMemo, useCallback, useState } from "react";
 import { Icons } from '../../tools/IconTools';
@@ -13,24 +14,7 @@ import { getToolbarTooltips, getToolbarPlaceholders, getToolbarAriaLabels, getSo
 import { ToolbarButtonWithTooltip } from "./components/ToolbarButtonWithTooltip";
 import { SearchInput } from "./components/SearchInput";
 import { ToolbarMenuWithTooltip, MenuOption } from "./components/ToolbarMenuWithTooltip";
-
-/**
- * Styles for the Toolbars component
- */
-const useToolbarsStyles = makeStyles({
-    exportSpinnerOverlay: {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100vw',
-        height: '100vh',
-        backgroundColor: 'rgba(0, 0, 0, 0.4)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: 99999
-    }
-});
+import { useToolbarsStyles } from "./ToolbarsStyle";
 
 /**
  * Props for the Toolbars component

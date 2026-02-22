@@ -67,9 +67,6 @@ const useDataverse = (context: ComponentFramework.Context<IInputs>) => {
             'IsValidForUpdate'
         ];
 
-        // Note: Format and FormatName are not included in $select because they're type-specific properties
-        // (only on StringAttributeMetadata, DateTimeAttributeMetadata, etc., not on base AttributeMetadata).
-        // However, the API automatically returns them for attribute types that have these properties.
         const result = await xrmService.fetch(
             `api/data/v9.2/EntityDefinitions(LogicalName='${record.entityLogicalName}')/Attributes?$select=${selectedAttributeFields.join(',')}&$filter=AttributeOf eq null&$orderby=DisplayName asc`,
         ) as EntityDefinition[];
@@ -81,8 +78,6 @@ const useDataverse = (context: ComponentFramework.Context<IInputs>) => {
                     displayName: item.DisplayName.UserLocalizedLabel?.Label,
                     attributeType: item.AttributeType as AttributeTypeCode | undefined,
                     attributeTypeName: item.AttributeTypeName?.Value,
-                    format: item.Format,  // Available on StringAttributeMetadata, DateTimeAttributeMetadata, etc.
-                    formatName: item.FormatName?.Value,  // Available on specific attribute types
                     isAuditEnabled: item.IsAuditEnabled?.Value ?? false,
                     isValidForRead: item.IsValidForRead ?? true,
                     isValidForCreate: item.IsValidForCreate ?? true,
@@ -125,8 +120,6 @@ const useDataverse = (context: ComponentFramework.Context<IInputs>) => {
                     displayName: attributeMetadata.displayName,
                     attributeType: attributeMetadata.attributeType,
                     attributeTypeName: attributeMetadata.attributeTypeName,
-                    format: attributeMetadata.format,
-                    formatName: attributeMetadata.formatName,
                     isAuditEnabled: attributeMetadata.isAuditEnabled,
                     isValidForRead: attributeMetadata.isValidForRead,
                     oldValue: oldValue.includes(attributeMetadata.logicalName)

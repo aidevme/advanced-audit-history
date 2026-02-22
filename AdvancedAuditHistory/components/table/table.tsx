@@ -1,3 +1,4 @@
+// AdvancedAuditHistory\components\table\table.tsx
 import * as React from "react";
 import {
     TableBody,
@@ -9,6 +10,7 @@ import {
     TableCellLayout,
     Button,
     Tooltip,
+    useId,
 } from "@fluentui/react-components";
 import { Attribute, Lookup } from "../../interfaces/attributes";
 import { Icons } from '../../tools/IconTools';
@@ -31,10 +33,32 @@ const columns = [
     { key: "advanced-audit-history-table-cell-action", tooltipKey: "advanced-audit-history-table-cell-action-tooltip", sortKey: null },
 ];
 
+/**
+ * Props for the AuditAttributes table component.
+ *
+ * @remarks
+ * Supplies the attribute list rendered in the audit detail table.
+ */
 interface IProps {
+    /** Attribute list to display in the audit table. */
     attributes: Attribute[]
 }
 
+/**
+ * AuditAttributes renders a sortable table of audit field changes.
+ *
+ * @remarks
+ * Supports sorting by field, field type, old value, and new value. Provides
+ * inline tooltips, lookup navigation, and a restore action per field.
+ *
+ * @param props - Component props.
+ * @returns Audit attributes table view.
+ *
+ * @example
+ * ```tsx
+ * <AuditAttributes attributes={audit.attributes} />
+ * ```
+ */
 export const AuditAttributes = ({ attributes }: IProps) => {
     const { context, resources } = useContext(ControlContext);
     const { filter } = useContext(FilterContext);
@@ -42,6 +66,7 @@ export const AuditAttributes = ({ attributes }: IProps) => {
     const { openConfirmationDialog } = useNavigation(context);
     const [sortColumn, setSortColumn] = useState<SortColumn>("field");
     const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+    const auditTableId = useId("audit-attributes-table");
 
     const sortedAttributes = useMemo(() => {
         const filtered = attributes.filter((attr) => attr.displayName)
@@ -99,7 +124,7 @@ export const AuditAttributes = ({ attributes }: IProps) => {
 
     return (
         <div style={{ padding: '16px', width: 'auto' }} >
-            <Table>
+            <Table id={auditTableId}>
                 <TableHeader>
                     <TableRow>
                         {

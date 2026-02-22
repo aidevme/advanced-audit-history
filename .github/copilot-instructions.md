@@ -349,6 +349,7 @@ npm test -- --watch   # Watch mode
 - Use optional chaining (`?.`) for safe property access
 - Enum for constants, never magic strings or numbers
 - Component prop names: PascalCase, functions: camelCase
+- When creating a new file, add the file-relative path as a comment on the first line.
 
 **Examples of nullish coalescing usage**:
 ```typescript

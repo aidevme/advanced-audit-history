@@ -1,3 +1,4 @@
+// AdvancedAuditHistory\components\header\Header.tsx
 import * as React from "react";
 import { Attribute, Audit } from "../../interfaces";
 import { useState } from "react";
@@ -9,28 +10,84 @@ import { Toolbars } from "../toolbar/Toolbars";
 
 
 
+/**
+ * Props for the Header component.
+ *
+ * @remarks
+ * Provides audit data, filtering metadata, and callbacks for toolbar actions,
+ * date range updates, and settings panel state changes.
+ */
 interface IHeaderProps {
+    /** Current audit entries shown in the view. */
     audits: Audit[];
+    /** Current audit sort order. */
     order: 'descending' | 'ascending'
+    /** All available entity attributes for filtering. */
     attributes: Attribute[],
+    /** Callback when field selection changes. */
     onFieldsChanged: (attributes: string[]) => void,
+    /** Callback to refresh audit data. */
     onRefresh: () => void;
+    /** Callback when audit sort order changes. */
     onAuditSortOrderChanged: (order: 'descending' | 'ascending') => void,
+    /** Callback when date range updates. */
     onDateRangeSelected: (dateRange: DateRange) => void,
+    /** Callback when filters are applied or cleared. */
     onFiltersApplied: (filters: AuditFilters | null) => void,
+    /** Callback when view type changes. */
     onViewTypeChanged: (viewType: 'card' | 'card-timeline') => void,
+    /** Callback when search term changes. */
     onSearchChanged: (searchTerm: string) => void,
+    /** Available user names for filter options. */
     users: string[],
+    /** Optional list of available action types. */
     availableActionTypes?: string[],
+    /** Optional earliest audit date available. */
     earliestAuditDate?: Date,
+    /** Optional latest audit date available. */
     latestAuditDate?: Date
 }
 
+/**
+ * Date range selection model.
+ *
+ * @remarks
+ * Used by filters and date range pickers to limit audit history.
+ */
 export interface DateRange {
+    /** Optional start date for the range. */
     startDate?: Date;
+    /** Optional end date for the range. */
     endDate?: Date;
 }
 
+/**
+ * Header component orchestrates toolbars, filters, and settings panels.
+ *
+ * @remarks
+ * Manages local UI state for filters and view type while delegating data
+ * updates to parent callbacks. Hosts the filters and settings panels.
+ *
+ * @param props - Header configuration and callback props.
+ * @returns Header layout with toolbar, active filters, and panels.
+ *
+ * @example
+ * ```tsx
+ * <Header
+ *   audits={audits}
+ *   order="descending"
+ *   attributes={attributes}
+ *   onFieldsChanged={setFields}
+ *   onRefresh={refresh}
+ *   onAuditSortOrderChanged={setOrder}
+ *   onDateRangeSelected={setDateRange}
+ *   onFiltersApplied={setFilters}
+ *   onViewTypeChanged={setViewType}
+ *   onSearchChanged={setSearch}
+ *   users={users}
+ * />
+ * ```
+ */
 const Header = ({ audits, order, attributes, onFieldsChanged, onDateRangeSelected, onRefresh, onAuditSortOrderChanged, onFiltersApplied, onViewTypeChanged, onSearchChanged, users, availableActionTypes = [], earliestAuditDate, latestAuditDate }: IHeaderProps) => {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isFiltersOpen, setIsFiltersOpen] = useState(false);
@@ -205,6 +262,7 @@ const Header = ({ audits, order, attributes, onFieldsChanged, onDateRangeSelecte
             <SettingsPanel
                 isOpen={isSettingsOpen}
                 onClose={onSettingsClose}
+                attributes={attributes}
             />
         </div>
     );

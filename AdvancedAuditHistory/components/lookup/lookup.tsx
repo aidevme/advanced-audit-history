@@ -1,3 +1,4 @@
+// AdvancedAuditHistory\components\lookup\lookup.tsx
 import * as React from "react";
 import { Link } from "@fluentui/react-components";
 import { Lookup } from "../../interfaces/attributes";
@@ -9,6 +10,22 @@ interface IProps {
     item: Lookup,
     isAuditField: boolean
 }
+
+/**
+ * LookupField renders a clickable lookup value with audit-aware styling.
+ *
+ * @remarks
+ * Uses PCF navigation to open the related record when clicked and
+ * adjusts visual styling based on whether the value is shown in audit context.
+ *
+ * @param props - Lookup field props.
+ * @returns Fluent UI Link that opens the related record.
+ *
+ * @example
+ * ```tsx
+ * <LookupField item={lookup} isAuditField={true} />
+ * ```
+ */
 
 const LookupField = ({ item, isAuditField }: IProps) => {
     const { context } = useContext(ControlContext);

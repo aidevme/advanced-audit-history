@@ -322,4 +322,149 @@
     <value>Restore individual field values to their previous state from this audit entry</value>
     <comment>Tooltip for the Action column header in the audit attributes table</comment>
   </data>
+  <!-- Settings Panel Resources -->
+  <data name="settings-panel-title" xml:space="preserve">
+    <value>Settings</value>
+    <comment>Title for the settings panel drawer</comment>
+  </data>
+  <data name="settings-panel-tab-display" xml:space="preserve">
+    <value>Display Options</value>
+    <comment>Display Options tab label in settings panel</comment>
+  </data>
+  <data name="settings-panel-tab-refresh" xml:space="preserve">
+    <value>Data Refresh</value>
+    <comment>Data Refresh tab label in settings panel</comment>
+  </data>
+  <data name="settings-panel-tab-integrations" xml:space="preserve">
+    <value>Integrations</value>
+    <comment>Integrations tab label in settings panel</comment>
+  </data>
+  <data name="settings-panel-tab-exceptions" xml:space="preserve">
+    <value>Exceptions</value>
+    <comment>Exceptions tab label in settings panel</comment>
+  </data>
+  <data name="settings-panel-exceptions-title" xml:space="preserve">
+    <value>Exception handling</value>
+    <comment>Title label for the exceptions panel section</comment>
+  </data>
+  <data name="settings-panel-exceptions-description" xml:space="preserve">
+    <value>Review which attributes are read-only or excluded from automation, and confirm audit status before making changes.</value>
+    <comment>Description text for the exceptions panel purpose</comment>
+  </data>
+  <data name="settings-panel-exceptions-select-all-tooltip" xml:space="preserve">
+    <value>Select or clear all attribute rows</value>
+    <comment>Tooltip for the select all checkbox in the exceptions table header</comment>
+  </data>
+  <data name="settings-panel-exceptions-attribute-name" xml:space="preserve">
+    <value>Attribute Name</value>
+    <comment>Header label for the Attribute Name column in the exceptions table</comment>
+  </data>
+  <data name="settings-panel-exceptions-attribute-type" xml:space="preserve">
+    <value>Attribute Type</value>
+    <comment>Header label for the Attribute Type column in the exceptions table</comment>
+  </data>
+  <data name="settings-panel-exceptions-read-only" xml:space="preserve">
+    <value>ReadOnly</value>
+    <comment>Header label for the ReadOnly column in the exceptions table</comment>
+  </data>
+  <data name="settings-panel-exceptions-automation" xml:space="preserve">
+    <value>Automation</value>
+    <comment>Header label for the Automation column in the exceptions table</comment>
+  </data>
+  <data name="settings-panel-exceptions-attribute-name-tooltip" xml:space="preserve">
+    <value>Display name of the attribute being reviewed</value>
+    <comment>Tooltip for the Attribute Name column header in the exceptions table</comment>
+  </data>
+  <data name="settings-panel-exceptions-attribute-type-tooltip" xml:space="preserve">
+    <value>Attribute data type with a matching icon</value>
+    <comment>Tooltip for the Attribute Type column header in the exceptions table</comment>
+  </data>
+  <data name="settings-panel-exceptions-read-only-tooltip" xml:space="preserve">
+    <value>Indicates whether the attribute is read-only for updates</value>
+    <comment>Tooltip for the ReadOnly column header in the exceptions table</comment>
+  </data>
+  <data name="settings-panel-exceptions-automation-tooltip" xml:space="preserve">
+    <value>Shows automation status and additional guidance</value>
+    <comment>Tooltip for the Automation column header in the exceptions table</comment>
+  </data>
+  <data name="settings-panel-tab-about" xml:space="preserve">
+    <value>About</value>
+    <comment>About tab label in settings panel</comment>
+  </data>
+  <data name="settings-panel-show-field-icons-label" xml:space="preserve">
+    <value>Show Field Type Icons</value>
+    <comment>Label for Show Field Type Icons switch control</comment>
+  </data>
+  <data name="settings-panel-show-field-icons-description" xml:space="preserve">
+    <value>Visual indicators help quickly identify field types such as text, number, date, lookup, and picklist values. Icons improve usability by providing instant recognition of data types, making it easier to filter and analyze audit records based on specific field attributes without reading detailed descriptions.</value>
+    <comment>Description for Show Field Type Icons switch control</comment>
+  </data>
+  <data name="settings-panel-show-non-auditable-fields-label" xml:space="preserve">
+    <value>Show Non-Auditable Fields</value>
+    <comment>Label for Show Non-Auditable Fields switch control</comment>
+  </data>
+  <data name="settings-panel-show-non-auditable-fields-description" xml:space="preserve">
+    <value>Display all entity fields in the selection dropdown, including those with audit tracking disabled. This provides complete visibility of the data model and helps identify which fields are not being tracked. Useful for administrators reviewing audit configuration and ensuring critical fields have audit enabled.</value>
+    <comment>Description for Show Non-Auditable Fields switch control</comment>
+  </data>
+  <data name="settings-panel-use-custom-colors-label" xml:space="preserve">
+    <value>Use Custom Colors</value>
+    <comment>Label for Use Custom Colors switch control</comment>
+  </data>
+  <data name="settings-panel-use-custom-colors-description" xml:space="preserve">
+    <value>Apply a personalized color palette to the audit history interface for better visual distinction and accessibility. Custom colors can highlight different action types, user groups, or importance levels, making it easier to spot patterns and anomalies in audit data. Supports high-contrast themes for improved readability.</value>
+    <comment>Description for Use Custom Colors switch control</comment>
+  </data>
+  <data name="settings-panel-auto-refresh-label" xml:space="preserve">
+    <value>Auto Refresh</value>
+    <comment>Label for Auto Refresh switch control</comment>
+  </data>
+  <data name="settings-panel-auto-refresh-description" xml:space="preserve">
+    <value>Enable automatic polling to keep audit history data current without manual refresh. The control queries the Dataverse audit log every 60 seconds to retrieve the latest changes. This ensures real-time visibility of audit events for active monitoring scenarios, compliance reviews, and incident response. Network bandwidth and API limits are respected to prevent performance impact.</value>
+    <comment>Description for Auto Refresh switch control</comment>
+  </data>
+  <data name="settings-panel-enable-graph-label" xml:space="preserve">
+    <value>Enable Graph</value>
+    <comment>Label for Enable Graph switch control</comment>
+  </data>
+  <data name="settings-panel-enable-graph-description" xml:space="preserve">
+    <value>Connect to Microsoft Graph API to access user profiles, organizational data, and enhanced security features. This integration enables real-time user information synchronization, advanced permission checks, and seamless authentication with Azure Active Directory for comprehensive audit tracking across your organization.</value>
+    <comment>Description for Enable Graph switch control</comment>
+  </data>
+  <data name="settings-panel-enable-pureview-label" xml:space="preserve">
+    <value>Enable Pureview</value>
+    <comment>Label for Enable Pureview switch control</comment>
+  </data>
+  <data name="settings-panel-enable-pureview-description" xml:space="preserve">
+    <value>Integrate with Microsoft Pureview for advanced data governance, compliance monitoring, and information protection. This enables automatic data classification, sensitivity labeling, audit log retention policies, and compliance reporting to meet regulatory requirements such as GDPR, HIPAA, and SOX while maintaining complete audit trail visibility.</value>
+    <comment>Description for Enable Pureview switch control</comment>
+  </data>
+  <data name="settings-panel-exceptions-content" xml:space="preserve">
+    <value>Configure exception handling and error management settings for the audit history control.</value>
+    <comment>Content for Exceptions tab in settings panel</comment>
+  </data>
+  <data name="settings-panel-about-title" xml:space="preserve">
+    <value>Advanced Audit History Control</value>
+    <comment>Title text in About tab of settings panel</comment>
+  </data>
+  <data name="settings-panel-about-version" xml:space="preserve">
+    <value>Version 2.0.0</value>
+    <comment>Version text in About tab of settings panel</comment>
+  </data>
+  <data name="settings-panel-about-description" xml:space="preserve">
+    <value>Enterprise-grade audit tracking for Dynamics 365 and Power Platform.</value>
+    <comment>Description text in About tab of settings panel</comment>
+  </data>
+  <data name="settings-panel-button-save" xml:space="preserve">
+    <value>Save</value>
+    <comment>Save button label in settings panel</comment>
+  </data>
+  <data name="settings-panel-button-cancel" xml:space="preserve">
+    <value>Cancel</value>
+    <comment>Cancel button label in settings panel</comment>
+  </data>
+  <data name="custom-color-panel-not-implemented" xml:space="preserve">
+    <value>Feature not implemented</value>
+    <comment>Placeholder text for custom color panel feature</comment>
+  </data>
 </root>

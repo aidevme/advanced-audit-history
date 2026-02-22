@@ -52,9 +52,7 @@ const AttributesDropdown: React.FC<IAttributesDropdownProps> = ({
                 const logData = {
                     displayName: attr.displayName ?? '',
                     logicalName: attr.logicalName,
-                    isAuditEnabled: attr.isAuditEnabled ?? false,
-                    format: attr.format ?? 'undefined',
-                    formatName: attr.formatName ?? 'undefined'
+                    isAuditEnabled: attr.isAuditEnabled ?? false
                 };
                 console.log(logData);
             });
