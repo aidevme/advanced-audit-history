@@ -11,5 +11,7 @@ export default interface Attribute {
     isValidForCreate?: boolean,
     isValidForUpdate?: boolean,
     oldValue?: string | number | object | boolean | Lookup,
-    newValue?: string | number | object | boolean | Lookup
+    newValue?: string | number | object | boolean | Lookup,
+    oldValueRaw?: string | number | boolean | null,
+    newValueRaw?: string | number | boolean | null
 }

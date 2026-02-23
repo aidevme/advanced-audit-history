@@ -77,5 +77,38 @@ export const useSettingsPanelStyles = makeStyles({
     aboutDescription: {
         marginTop: '16px',
         lineHeight: 1.5
+    },
+    userInfoSection: {
+        marginTop: '16px'
+    },
+    userInfoContent: {
+        marginTop: '12px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '16px'
+    },
+    userInfoValue: {
+        marginTop: '4px',
+        color: '#605E5C',
+        fontSize: '14px'
+    },
+    rolesContainer: {
+        marginTop: '8px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '8px'
+    },
+    roleItem: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        padding: '6px 12px',
+        backgroundColor: '#F3F2F1',
+        borderRadius: '4px',
+        fontSize: '14px'
+    },
+    roleName: {
+        color: '#323130',
+        fontSize: '14px'
     }
 });

@@ -1,3 +1,4 @@
+// AdvancedAuditHistory\hooks\useAudit.tsx
 import { useContext, useRef } from "react";
 import { ControlContext } from "../context/control-context";
 import { IInputs } from "../generated/ManifestTypes";
@@ -23,7 +24,9 @@ export const useAudit = (context: ComponentFramework.Context<IInputs>) => {
 
         for (const attr of attributes) {
             const name = attr.logicalName;
-            const value = attr.oldValue ?? null;
+            const value = isLookupValue(attr.oldValue)
+                ? attr.oldValue
+                : (attr.oldValueRaw ?? attr.oldValue ?? null);
 
             if (value === null) {
                 mappedChanges[name] = null;
@@ -42,15 +45,23 @@ export const useAudit = (context: ComponentFramework.Context<IInputs>) => {
                 continue;
             }
 
-            if (isNumericAttribute(attr.attributeType) && typeof value === "string") {
-                const parsedValue = parseNumericValue(value);
-                mappedChanges[name] = parsedValue ?? value;
+            if (isNumericAttribute(attr.attributeType)) {
+                if (typeof value === "string") {
+                    const parsedValue = parseNumericValue(value);
+                    mappedChanges[name] = parsedValue ?? value;
+                } else {
+                    mappedChanges[name] = value;
+                }
                 continue;
             }
 
-            if (isOptionSetAttribute(attr.attributeType) && typeof value === "string") {
-                const parsedValue = parseNumericValue(value);
-                mappedChanges[name] = parsedValue ?? value;
+            if (isOptionSetAttribute(attr.attributeType)) {
+                if (typeof value === "string") {
+                    const parsedValue = parseNumericValue(value);
+                    mappedChanges[name] = parsedValue ?? value;
+                } else {
+                    mappedChanges[name] = value;
+                }
                 continue;
             }
 

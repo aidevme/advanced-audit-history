@@ -415,6 +415,10 @@
     <value>Apply a personalized color palette to the audit history interface for better visual distinction and accessibility. Custom colors can highlight different action types, user groups, or importance levels, making it easier to spot patterns and anomalies in audit data. Supports high-contrast themes for improved readability.</value>
     <comment>Description for Use Custom Colors switch control</comment>
   </data>
+  <data name="settings-panel-do-not-use-colors-label" xml:space="preserve">
+    <value>Do not use colors</value>
+    <comment>Label for Do not use colors switch control</comment>
+  </data>
   <data name="settings-panel-auto-refresh-label" xml:space="preserve">
     <value>Auto Refresh</value>
     <comment>Label for Auto Refresh switch control</comment>
@@ -454,6 +458,30 @@
   <data name="settings-panel-about-description" xml:space="preserve">
     <value>Enterprise-grade audit tracking for Dynamics 365 and Power Platform.</value>
     <comment>Description text in About tab of settings panel</comment>
+  </data>
+  <data name="settings-panel-user-properties-title" xml:space="preserve">
+    <value>User Properties</value>
+    <comment>Title for User Properties section in About tab</comment>
+  </data>
+  <data name="settings-panel-user-name-label" xml:space="preserve">
+    <value>User Name:</value>
+    <comment>Label for user name field in About tab</comment>
+  </data>
+  <data name="settings-panel-user-id-label" xml:space="preserve">
+    <value>User ID:</value>
+    <comment>Label for user ID field in About tab</comment>
+  </data>
+  <data name="settings-panel-security-roles-label" xml:space="preserve">
+    <value>Security Roles:</value>
+    <comment>Label for security roles list in About tab</comment>
+  </data>
+  <data name="settings-panel-no-security-roles" xml:space="preserve">
+    <value>No security roles found</value>
+    <comment>Message displayed when user has no security roles</comment>
+  </data>
+  <data name="settings-panel-loading-user-info" xml:space="preserve">
+    <value>Loading user information...</value>
+    <comment>Loading message while fetching user information</comment>
   </data>
   <data name="settings-panel-button-save" xml:space="preserve">
     <value>Save</value>

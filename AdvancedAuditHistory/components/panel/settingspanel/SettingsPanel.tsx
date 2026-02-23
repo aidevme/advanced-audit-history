@@ -11,7 +11,8 @@ import {
     TabList,
     Tab,
     Field,
-    Persona
+    Persona,
+    Spinner
 } from "@fluentui/react-components";
 import { Icons } from '../../../tools/IconTools';
 import { useSettingsPanelStyles } from './SettingsPanelStyles';
@@ -19,6 +20,7 @@ import { CustomColorPanel } from './components/CustomColorPanel';
 import { ExceptionsPanel } from './components/ExceptionsPanel';
 import { ControlContext } from '../../../context/control-context';
 import { Attribute } from '../../../interfaces';
+import { useUserInfo } from '../../../hooks';
 import * as React from "react";
 
 interface ISettingsPanelProps {
@@ -49,7 +51,8 @@ interface ISettingsPanelProps {
  */
 const SettingsPanel: React.FC<ISettingsPanelProps> = ({ isOpen, onClose, attributes }) => {
     const styles = useSettingsPanelStyles();
-    const { resources } = React.useContext(ControlContext);
+    const { context, resources } = React.useContext(ControlContext);
+    const { userName, userId, securityRoles, isLoading: isLoadingUserInfo } = useUserInfo(context);
     const [selectedTab, setSelectedTab] = React.useState<string>("display");
     const [showAuditDisabledFields, setShowAuditDisabledFields] = React.useState(true);
     const [enableAutoRefresh, setEnableAutoRefresh] = React.useState(false);
@@ -248,6 +251,48 @@ const SettingsPanel: React.FC<ISettingsPanelProps> = ({ isOpen, onClose, attribu
                                                 <div className={styles.aboutVersion}>{resources.getString("settings-panel-about-version")}</div>
                                                 <div className={styles.aboutDescription}>
                                                     {resources.getString("settings-panel-about-description")}
+                                                </div>
+                                            </div>
+
+                                            <Divider style={{ marginTop: '24px', marginBottom: '16px' }} />
+
+                                            <div className={styles.userInfoSection}>
+                                                <div className={styles.aboutTitle}>
+                                                    {resources.getString("settings-panel-user-properties-title")}
+                                                </div>
+
+                                                <div className={styles.userInfoContent}>
+                                                    {isLoadingUserInfo ? (
+                                                        <Spinner size="small" label={resources.getString("settings-panel-loading-user-info")} />
+                                                    ) : (
+                                                        <>
+                                                            <Field>
+                                                                <Label weight="semibold">{resources.getString("settings-panel-user-name-label")}</Label>
+                                                                <Label className={styles.userInfoValue}>{userName}</Label>
+                                                            </Field>
+
+                                                            <Field>
+                                                                <Label weight="semibold">{resources.getString("settings-panel-user-id-label")}</Label>
+                                                                <Label className={styles.userInfoValue}>{userId}</Label>
+                                                            </Field>
+
+                                                            <Field>
+                                                                <Label weight="semibold">{resources.getString("settings-panel-security-roles-label")}</Label>
+                                                                {securityRoles.length > 0 ? (
+                                                                    <div className={styles.rolesContainer}>
+                                                                        {securityRoles.map((role) => (
+                                                                            <div key={role.roleid} className={styles.roleItem}>
+                                                                                <Icons.ShieldCheckmark16 />
+                                                                                <Label className={styles.roleName}>{role.name}</Label>
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                ) : (
+                                                                    <Label className={styles.userInfoValue}>{resources.getString("settings-panel-no-security-roles")}</Label>
+                                                                )}
+                                                            </Field>
+                                                        </>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>

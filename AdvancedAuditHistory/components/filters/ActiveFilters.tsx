@@ -1,22 +1,57 @@
+// AdvancedAuditHistory\components\filters\ActiveFilters.tsx
 import * as React from 'react';
-import { Label, Tag, TagProps } from '@fluentui/react-components';
+import { Label, Tag } from '@fluentui/react-components';
 import { Attribute } from '../../interfaces/attributes';
 import { AuditFilters } from '../panel/filterspanel/FiltersPanel';
+import { useActiveFiltersStyles } from './ActiveFiltersStyles';
 
+/**
+ * Props for the ActiveFilters component.
+ *
+ * @property activeFilters - The currently applied audit filters, or `null` when no filters are active.
+ * @property attributes - Full list of entity attributes used to resolve logical names to display names on attribute filter tags.
+ * @property onDismissFilter - Callback invoked when the user removes a single filter tag.
+ *   Receives the filter category and an optional value identifying which item to remove
+ *   (e.g. a user name or attribute logical name).
+ */
 interface IActiveFiltersProps {
     activeFilters: AuditFilters | null;
     attributes: Attribute[];
     onDismissFilter: (filterType: 'user' | 'attribute' | 'actionType' | 'operationType' | 'minChanges' | 'dateRange', value?: string) => void;
 }
 
+/**
+ * ActiveFilters renders a horizontal row of dismissible filter tags representing every
+ * currently active audit filter.
+ *
+ * @remarks
+ * Each tag corresponds to one filter category (user, attribute, action type, operation type,
+ * minimum change count, or date range). Clicking the dismiss icon on a tag calls
+ * `onDismissFilter` with the appropriate category and optional value so the parent can
+ * update filter state. When `activeFilters` is `null` a "No active filters" label is shown.
+ *
+ * @param props - Component props defined by {@link IActiveFiltersProps}.
+ * @returns A flex-wrapped row of FluentUI `Tag` components, one per active filter value.
+ *
+ * @example
+ * ```tsx
+ * <ActiveFilters
+ *   activeFilters={filters}
+ *   attributes={attributes}
+ *   onDismissFilter={(type, value) => removeFilter(type, value)}
+ * />
+ * ```
+ */
 export const ActiveFilters: React.FC<IActiveFiltersProps> = ({ activeFilters, attributes, onDismissFilter }) => {
+    const styles = useActiveFiltersStyles();
+
     return (
-        <div style={{ padding: '8px 0', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <Label weight="semibold" style={{ fontSize: 14, color: '#323130' }}>
+        <div className={styles.container}>
+            <Label weight="semibold" className={styles.label}>
                 Filters:
             </Label>
             {!activeFilters && (
-                <Label style={{ fontSize: 12, color: '#605E5C', fontStyle: 'italic' }}>
+                <Label className={styles.emptyLabel}>
                     No active filters
                 </Label>
             )}

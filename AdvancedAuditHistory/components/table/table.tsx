@@ -9,6 +9,7 @@ import {
     TableHeaderCell,
     TableCellLayout,
     Button,
+    Switch,
     Tooltip,
     useId,
 } from "@fluentui/react-components";
@@ -17,10 +18,10 @@ import { Icons } from '../../tools/IconTools';
 import { useContext, useMemo, useState } from "react";
 import { FilterContext } from "../../context/filter-context";
 import { ControlContext } from "../../context/control-context";
-import LookupField from "../lookup/lookup";
+import LookupField from "../lookup/Lookup";
 import { useAudit } from "../../hooks/useAudit";
 import { useNavigation } from "../../hooks";
-import { getAttributeTypeName } from "../../enums/AttributeTypeCode";
+import { getAttributeTypeIcon } from "../../tools/attributeTypeIcon";
 
 type SortColumn = "field" | "fieldType" | "oldValue" | "newValue" | null;
 type SortDirection = "asc" | "desc";
@@ -32,6 +33,49 @@ const columns = [
     { key: "advanced-audit-history-table-cell-new-value", tooltipKey: "advanced-audit-history-table-cell-new-value-tooltip", sortKey: "newValue" as SortColumn },
     { key: "advanced-audit-history-table-cell-action", tooltipKey: "advanced-audit-history-table-cell-action-tooltip", sortKey: null },
 ];
+
+const toBoolean = (value: Attribute["oldValue"]) => {
+    if (typeof value === "boolean") {
+        return value;
+    }
+
+    if (typeof value === "string") {
+        const normalized = value.trim().toLowerCase();
+        if (normalized === "true" || normalized === "yes") {
+            return true;
+        }
+        if (normalized === "false" || normalized === "no") {
+            return false;
+        }
+    }
+
+    return false;
+};
+
+const renderMemoValue = (value: Attribute["oldValue"]) => {
+    const displayValue =
+        typeof value === "string" || typeof value === "number" || typeof value === "boolean"
+            ? String(value)
+            : typeof value === "object" && value !== null && "name" in value
+                ? String((value).name ?? "-")
+                : "-";
+
+    return (
+        <Tooltip content={displayValue} relationship="description" withArrow>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", maxWidth: "240px" }}>
+                <div style={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    flex: 1
+                }}>
+                    {displayValue}
+                </div>
+                <span aria-hidden="true">...</span>
+            </div>
+        </Tooltip>
+    );
+};
 
 /**
  * Props for the AuditAttributes table component.
@@ -73,7 +117,7 @@ export const AuditAttributes = ({ attributes }: IProps) => {
 
         const getValueForSort = (attr: Attribute, column: SortColumn): string => {
             if (column === "field") return String(attr.displayName ?? "");
-            if (column === "fieldType") return String(getAttributeTypeName(attr.attributeType as number | undefined) ?? "");
+            if (column === "fieldType") return String(attr.attributeTypeName ?? "");
             if (column === "oldValue") {
                 if (typeof attr.oldValue === "object") return String((attr.oldValue as Lookup)?.name ?? "");
                 return String(attr.oldValue ?? "");
@@ -161,16 +205,52 @@ export const AuditAttributes = ({ attributes }: IProps) => {
                                     {attribute.displayName}
                                 </TableCell>
                                 <TableCell>
-                                    {getAttributeTypeName(attribute.attributeType as number | undefined)}
+                                    <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                                        {getAttributeTypeIcon(attribute.attributeTypeName)}
+                                        <span>{attribute.attributeTypeName ?? ""}</span>
+                                    </div>
                                 </TableCell>
                                 <TableCell>
                                     <TableCellLayout>
                                         {
-                                            typeof attribute.oldValue == "object" ?
-                                                <LookupField item={attribute.oldValue as Lookup} isAuditField={true} />
+                                            attribute.attributeTypeName === "BooleanType" ? (
+                                                <Switch checked={toBoolean(attribute.oldValue)} disabled />
+                                            ) : attribute.attributeTypeName === "MemoType" ? (
+                                                renderMemoValue(attribute.oldValue)
+                                            ) :
+                                                typeof attribute.oldValue == "object" ?
+                                                    <LookupField item={attribute.oldValue as Lookup} isAuditField={true} />
+                                                    : (
+                                                        <Tooltip
+                                                            content={String(attribute.oldValue ?? "-")}
+                                                            relationship="description"
+                                                            withArrow
+                                                        >
+                                                            <div style={{
+                                                                maxWidth: '200px',
+                                                                overflow: 'hidden',
+                                                                textOverflow: 'ellipsis',
+                                                                whiteSpace: 'nowrap'
+                                                            }}>
+                                                                {attribute.oldValue ?? "-"}
+                                                            </div>
+                                                        </Tooltip>
+                                                    )
+                                        }
+                                    </TableCellLayout>
+                                </TableCell>
+                                <TableCell>
+                                    {
+                                        attribute.attributeTypeName === "BooleanType" ? (
+                                            <Switch checked={toBoolean(attribute.newValue)} disabled />
+                                        ) : attribute.attributeTypeName === "MemoType" ? (
+                                            renderMemoValue(attribute.newValue)
+                                        ) :
+                                            typeof attribute.newValue == "object" ?
+                                                <LookupField item={attribute.newValue as Lookup} isAuditField={true} />
                                                 : (
                                                     <Tooltip
-                                                        content={String(attribute.oldValue ?? "-")}
+                                                        content={String(attribute.newValue ?? "-")}
                                                         relationship="description"
                                                         withArrow
                                                     >
@@ -180,33 +260,10 @@ export const AuditAttributes = ({ attributes }: IProps) => {
                                                             textOverflow: 'ellipsis',
                                                             whiteSpace: 'nowrap'
                                                         }}>
-                                                            {attribute.oldValue ?? "-"}
+                                                            {attribute.newValue ?? "-"}
                                                         </div>
                                                     </Tooltip>
                                                 )
-                                        }
-                                    </TableCellLayout>
-                                </TableCell>
-                                <TableCell>
-                                    {
-                                        typeof attribute.newValue == "object" ?
-                                            <LookupField item={attribute.newValue as Lookup} isAuditField={true} />
-                                            : (
-                                                <Tooltip
-                                                    content={String(attribute.newValue ?? "-")}
-                                                    relationship="description"
-                                                    withArrow
-                                                >
-                                                    <div style={{
-                                                        maxWidth: '200px',
-                                                        overflow: 'hidden',
-                                                        textOverflow: 'ellipsis',
-                                                        whiteSpace: 'nowrap'
-                                                    }}>
-                                                        {attribute.newValue ?? "-"}
-                                                    </div>
-                                                </Tooltip>
-                                            )
                                     }
                                 </TableCell>
                                 <TableCell style={{ width: 30 }}>

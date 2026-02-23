@@ -10,8 +10,11 @@
     <Descriptions>
       <!-- Description of Cds Solution in language code -->
       <Description description="Enterprise-grade PowerApps Component Framework (PCF) control for Dynamics 365 and Power Platform that provides comprehensive audit history management with advanced filtering, timeline visualization, export capabilities, and compliance reporting features." languagecode="1033" />
+      <Description description="Unternehmenstaugliche PowerApps Component Framework (PCF) Steuerung für Dynamics 365 und Power Platform, die umfassendes Audit-History-Management mit erweiterten Filteroptionen, Timeline-Visualisierung, Export-Funktionen und Compliance-Berichterstattung bietet." languagecode="1031" />
+      <Description description="Contrôle PowerApps Component Framework (PCF) de niveau entreprise pour Dynamics 365 et Power Platform qui fournit une gestion complète de l'historique d'audit avec filtrage avancé, visualisation chronologique, capacités d'export et fonctionnalités de reporting de conformité." languagecode="1036" />
+      <Description description="Controllo PowerApps Component Framework (PCF) di livello enterprise per Dynamics 365 e Power Platform che fornisce una gestione completa della cronologia di audit con filtri avanzati, visualizzazione timeline, capacità di esportazione e funzionalità di reporting sulla conformità." languagecode="1040" />
     </Descriptions>
-    <Version>1.0.0.59</Version>
+    <Version>1.0.0.67</Version>
     <!-- Solution Package Type: Unmanaged(0)/Managed(1)/Both(2)-->
     <Managed>2</Managed>
     <Publisher>

@@ -1,12 +1,8 @@
+// AdvancedAuditHistory\hooks\useDataverse.tsx
 import { useEffect, useMemo, useState } from "react";
 import { IInputs } from "../generated/ManifestTypes";
 import { XrmService } from "./service";
-import Record from "../interfaces/data/record";
-import { EntityDefinition } from "../interfaces/definition";
-import { Attribute, AttributeMetada, Lookup } from "../interfaces/attributes";
-import { XrmRequest } from "../interfaces/xrm";
-import { History } from "../interfaces/data";
-import { Audit, AuditDetail } from "../interfaces/audit";
+import { RecordData, Attribute, AttributeMetada, Lookup, EntityDefinition, XrmRequest, History, Audit, AuditDetail } from "../interfaces";
 import { ExtendedMode } from "../interfaces/pcf";
 import { getFormattedValue } from "../utils/utils";
 import { AttributeTypeCode } from "../enums/AttributeTypeCode";
@@ -19,12 +15,12 @@ const useDataverse = (context: ComponentFramework.Context<IInputs>) => {
     // Detect test harness environment using ExtendedMode interface
     const isTestHarness = (context.mode as ExtendedMode).isAuthoringMode !== false;
 
-    const record = useMemo(() => {
-        const mode = context?.mode as ExtendedMode;
+    const record = useMemo((): RecordData => {
+        const mode = context?.mode as ExtendedMode | undefined;
         return {
-            id: mode.contextInfo?.entityId ?? "00000000-0000-0000-0000-000000000000",
-            entityLogicalName: mode.contextInfo?.entityTypeName ?? "account"
-        } as Record
+            id: mode?.contextInfo?.entityId ?? "00000000-0000-0000-0000-000000000000",
+            entityLogicalName: mode?.contextInfo?.entityTypeName ?? "account"
+        };
     }, [context?.mode]);
 
     const xrmService = useMemo(() => {
@@ -105,16 +101,84 @@ const useDataverse = (context: ComponentFramework.Context<IInputs>) => {
 
         return audit.AuditDetailCollection.AuditDetails.map((detail: AuditDetail) => {
             const auditDetail = Object.keys(detail);
-            const oldValue = auditDetail.includes("OldValue") ? Object.keys(detail.OldValue!) : [];
-            const newValue = auditDetail.includes("NewValue") ? Object.keys(detail.NewValue!) : [];
+            const oldValueObj = auditDetail.includes("OldValue") ? detail.OldValue! : {};
+            const newValueObj = auditDetail.includes("NewValue") ? detail.NewValue! : {};
+            const oldValueKeys = Object.keys(oldValueObj);
+            const newValueKeys = Object.keys(newValueObj);
 
+            const getRawValue = (valueObj: unknown, logicalName: string): string | number | boolean | null | undefined => {
+                if (!valueObj || typeof valueObj !== "object") {
+                    return undefined;
+                }
+
+                const obj = valueObj as Partial<Record<string, unknown>>;
+                const rawValue = obj[logicalName];
+
+                if (typeof rawValue === "string" || typeof rawValue === "number" || typeof rawValue === "boolean") {
+                    return rawValue;
+                }
+
+                return rawValue == null ? null : undefined;
+            };
+
+            // Helper to check whether a field name appears in an audit value object,
+            // covering both direct key format and the _fieldname_value OData annotation format.
+            const presentInObj = (keys: string[], logicalName: string) =>
+                keys.includes(logicalName) ||
+                keys.some(k => k === `_${logicalName}_value` || k.startsWith(`_${logicalName}_value@`));
+
+            // Filter attributes that appear in the audit data (either base name or _value suffix format)
             const dataAttributes = attributes?.filter((attributeMetadata) => {
-                return newValue.includes(attributeMetadata.logicalName) ||
-                    newValue.includes(`_${attributeMetadata.logicalName}_value`) ||
-                    oldValue.includes(attributeMetadata.logicalName) ||
-                    oldValue.includes(`_${attributeMetadata.logicalName}_value`)
+                return presentInObj(oldValueKeys, attributeMetadata.logicalName) ||
+                    presentInObj(newValueKeys, attributeMetadata.logicalName);
             }
             )?.map((attributeMetadata) => {
+                // Helper function to extract lookup value from audit data.
+                // Handles both direct Lookup object format (mock data) and the real Dataverse
+                // OData _fieldname_value annotation format that the audit API returns.
+                const extractLookupValue = (valueObj: unknown, attrLogicalName: string): Lookup | string => {
+
+                    const obj = valueObj as Partial<Record<string, unknown>>;
+
+                    // Check for direct Lookup object (mock data or pre-formatted OData response)
+                    const directValue = obj[attrLogicalName];
+                    if (typeof directValue === "object" && directValue !== null && "id" in directValue && "name" in directValue) {
+                        return directValue as Lookup;
+                    }
+
+                    // Check for _fieldname_value format (real Dataverse audit API response)
+                    const valueKey = `_${attrLogicalName}_value`;
+                    const valueExists = Object.keys(obj).some(key => key === valueKey || key.startsWith(`${valueKey}@`));
+
+                    if (valueExists && obj[valueKey] != null) {
+                        const idValue = obj[valueKey];
+                        const nameValue = obj[`${valueKey}@OData.Community.Display.V1.FormattedValue`];
+                        const entityTypeValue = obj[`${valueKey}@Microsoft.Dynamics.CRM.lookuplogicalname`];
+
+                        return {
+                            id: typeof idValue === "string" ? idValue : "",
+                            name: typeof nameValue === "string" ? nameValue : "",
+                            entityType: typeof entityTypeValue === "string" ? entityTypeValue : ""
+                        } as Lookup;
+                    }
+                    return "";
+                };
+
+                // Detect lookup/customer/owner by both the numeric AttributeType code
+                // (from EntityDefinitions API) and the string AttributeTypeName
+                // (more reliable since it is always populated as a string from the API).
+                // Also auto-detect via _fieldname_value key presence in the audit payload
+                // as a final fallback when type metadata is missing or unreliable.
+                const isLookupType =
+                    attributeMetadata.attributeType === AttributeTypeCode.Lookup ||
+                    attributeMetadata.attributeType === AttributeTypeCode.Customer ||
+                    attributeMetadata.attributeType === AttributeTypeCode.Owner ||
+                    attributeMetadata.attributeTypeName === "LookupType" ||
+                    attributeMetadata.attributeTypeName === "CustomerType" ||
+                    attributeMetadata.attributeTypeName === "OwnerType" ||
+                    presentInObj(oldValueKeys, attributeMetadata.logicalName) && !oldValueKeys.includes(attributeMetadata.logicalName) ||
+                    presentInObj(newValueKeys, attributeMetadata.logicalName) && !newValueKeys.includes(attributeMetadata.logicalName);
+
                 const mappedAttribute: Attribute = {
                     logicalName: attributeMetadata.logicalName,
                     displayName: attributeMetadata.displayName,
@@ -122,24 +186,14 @@ const useDataverse = (context: ComponentFramework.Context<IInputs>) => {
                     attributeTypeName: attributeMetadata.attributeTypeName,
                     isAuditEnabled: attributeMetadata.isAuditEnabled,
                     isValidForRead: attributeMetadata.isValidForRead,
-                    oldValue: oldValue.includes(attributeMetadata.logicalName)
-                        ? getFormattedValue(oldValue, detail.OldValue, attributeMetadata.logicalName)
-                        : oldValue.includes(`_${attributeMetadata.logicalName}_value`)
-                            ? {
-                                id: detail.OldValue![`_${attributeMetadata.logicalName}_value`],
-                                name: detail.OldValue![`_${attributeMetadata.logicalName}_value@OData.Community.Display.V1.FormattedValue`],
-                                entityType: detail.OldValue![`_${attributeMetadata.logicalName}_value@Microsoft.Dynamics.CRM.lookuplogicalname`]
-                            } as Lookup
-                            : "",
-                    newValue: newValue.includes(attributeMetadata.logicalName)
-                        ? getFormattedValue(newValue, detail.NewValue, attributeMetadata.logicalName)
-                        : newValue.includes(`_${attributeMetadata.logicalName}_value`)
-                            ? {
-                                id: detail.NewValue![`_${attributeMetadata.logicalName}_value`],
-                                name: detail.NewValue![`_${attributeMetadata.logicalName}_value@OData.Community.Display.V1.FormattedValue`],
-                                entityType: detail.NewValue![`_${attributeMetadata.logicalName}_value@Microsoft.Dynamics.CRM.lookuplogicalname`]
-                            } as Lookup
-                            : "",
+                    oldValue: isLookupType
+                        ? extractLookupValue(oldValueObj, attributeMetadata.logicalName)
+                        : getFormattedValue(oldValueKeys, oldValueObj, attributeMetadata.logicalName),
+                    newValue: isLookupType
+                        ? extractLookupValue(newValueObj, attributeMetadata.logicalName)
+                        : getFormattedValue(newValueKeys, newValueObj, attributeMetadata.logicalName),
+                    oldValueRaw: getRawValue(oldValueObj, attributeMetadata.logicalName),
+                    newValueRaw: getRawValue(newValueObj, attributeMetadata.logicalName)
                 };
                 return mappedAttribute;
             })

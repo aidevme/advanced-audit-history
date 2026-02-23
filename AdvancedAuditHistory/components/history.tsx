@@ -1,3 +1,4 @@
+// AdvancedAuditHistory\components\History.tsx
 import * as React from 'react';
 import { Audit } from '../interfaces';
 import CardView from './views/CardView';
@@ -21,8 +22,8 @@ interface IHistoryProps {
 export default function History({ audits, viewType }: IHistoryProps) {
     switch (viewType) {
         case 'card-timeline':
-            return audits && audits.length > 0 
-                ? <TimelineView audits={audits} /> 
+            return audits && audits.length > 0
+                ? <TimelineView audits={audits} />
                 : <CardView audits={audits} />;
         case 'card':
         default:

@@ -18,10 +18,10 @@ import {
 import { Audit, Attribute } from "../../interfaces";
 import { useContext } from "react";
 import { ControlContext } from "../../context/control-context";
-import { AuditAttributes } from "../table/table";
+import { AuditAttributes } from "../table/Table";
 import { useAudit } from "../../hooks/useAudit";
 import { useNavigation } from "../../hooks";
-import LookupField from "../lookup/lookup";
+import LookupField from "../lookup/Lookup";
 import { useAuditCardStyles } from "./AuditCardStyles";
 
 interface IAuditCardProps {

@@ -1,4 +1,4 @@
-export default interface Record {
+export default interface RecordData {
     id: string;
     entityLogicalName: string;
 }

@@ -2,7 +2,7 @@ import { Dropdown, Option, OptionOnSelectData, SelectionEvents, useId } from "@f
 import * as React from "react";
 import { useMemo, useState, useEffect } from "react";
 import { Attribute } from "../../interfaces";
-import { getAttributeTypeIcon } from "./attributeTypeIcon";
+import { getAttributeTypeIcon } from "../../tools/attributeTypeIcon";
 import { useAttributesDropdownStyles } from "./AttributesDropdown.styles";
 
 interface IAttributesDropdownProps {

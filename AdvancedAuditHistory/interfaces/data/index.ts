@@ -1,11 +1,11 @@
 import UpdatedData from "./updated";
-import Data from "./record";
+import RecordData from "./record";
 import { Dynamic } from "./generic-object";
 import History from "./history";
 
-export { 
-    Data, 
-    UpdatedData, 
+export {
+    RecordData,
+    UpdatedData,
     History,
     Dynamic
- }
+}

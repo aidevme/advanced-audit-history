@@ -13,7 +13,7 @@ import {
     useId
 } from "@fluentui/react-components";
 import { ControlContext } from "../../../../context/control-context";
-import { getAttributeTypeIcon } from "../../../dropdown/attributeTypeIcon";
+import { getAttributeTypeIcon } from "../../../../tools/attributeTypeIcon";
 import { Icons } from "../../../../tools/IconTools";
 import { Attribute } from "../../../../interfaces";
 

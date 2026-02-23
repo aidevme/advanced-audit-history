@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Label } from "@fluentui/react-components";
+import { Field, Switch } from "@fluentui/react-components";
 import { ControlContext } from "../../../../context/control-context";
 
 /**
@@ -17,8 +17,13 @@ import { ControlContext } from "../../../../context/control-context";
  */
 export const CustomColorPanel: React.FC = () => {
     const { resources } = React.useContext(ControlContext);
-    
+
     return (
-        <Label>{resources.getString("custom-color-panel-not-implemented")}</Label>
+        <Field
+            label={resources.getString("settings-panel-do-not-use-colors-label")}
+            hint={resources.getString("custom-color-panel-not-implemented")}
+        >
+            <Switch />
+        </Field>
     );
 };

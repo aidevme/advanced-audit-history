@@ -1,11 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <manifest>
-  <control namespace="AIDEVME.CRM.Pcf" constructor="AdvancedAuditHistory" version="0.0.59"
+  <control namespace="AIDEVME.CRM.Pcf" constructor="AdvancedAuditHistory" version="0.0.67"
     display-name-key="AdvancedAuditHistory_Display_Key"
-    description-key="AdvancedAuditHistory_Desc_Key"
-    control-type="virtual">
-    <external-service-usage enabled="false">
-    </external-service-usage>
+    description-key="AdvancedAuditHistory_Desc_Key" control-type="virtual">
+    <external-service-usage enabled="false" />
     <property name="advancedAuditHistoryBoundField"
       display-name-key="advancedAuditHistoryBoundField_Display_Key"
       description-key="advancedAuditHistoryBoundField_Desc_Key" of-type-group="boundFieldTypes"
@@ -22,6 +20,7 @@
       <platform-library name="React" version="16.14.0" />
       <platform-library name="Fluent" version="9.46.2" />
       <resx path="strings/AdvancedAuditHistory.1033.resx" version="1.0.0" />
+      <resx path="strings/AdvancedAuditHistory.1031.resx" version="1.0.0" />
     </resources>
     <feature-usage>
       <uses-feature name="Utility" required="true" />

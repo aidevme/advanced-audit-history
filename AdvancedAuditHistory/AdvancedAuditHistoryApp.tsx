@@ -7,7 +7,7 @@ import {
 } from "@fluentui/react-components";
 import { IInputs } from "./generated/ManifestTypes";
 import { ControlContext } from "./context/control-context";
-import History from "./components/history";
+import History from "./components/History";
 import { useDataverse } from "./hooks";
 import Header, { DateRange } from "./components/header/Header";
 import { useMemo, useState, useEffect } from "react";

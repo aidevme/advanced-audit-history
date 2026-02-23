@@ -3,7 +3,7 @@
  */
 
 import * as React from "react";
-import { Icons } from "../../tools/IconTools";
+import { Icons } from "./IconTools";
 
 /**
  * Returns the icon element for a given attribute type name.
@@ -19,39 +19,41 @@ export const getAttributeTypeIcon = (attributeTypeName?: string): JSX.Element =>
             return <Icons.TextField />;
         case "MemoType":
             return <Icons.MultipleTextField />;
-            // Numbers
+        // Numbers
         case "IntegerType":
             return <Icons.WholeNumber />;
-             case "DecimalType":
+        case "DecimalType":
             return <Icons.DecimalNumber />;
         case "DoubleType":
             return <Icons.FloatingPointNumber />;
-             case "BigIntType":
+        case "BigIntType":
             return <Icons.WholeNumber />;
+        case "DateTimeType":
+            return <Icons.Calendar16 />;
         // Currency type
-            case "MoneyType":
+        case "MoneyType":
             return <Icons.Currency />;
         // Choice fields: Choice, Picklist, Boolean
         case "PicklistType":
             return <Icons.Choice />;
         case "BooleanType":
             return <Icons.YesNo />;
-            // File and Image types - using Document icon as placeholder
+        // File and Image types - using Document icon as placeholder
         case "FileType":
             return <Icons.File />;
         case "ImageType":
             return <Icons.Image />;
-            // Lookup and Customer types
+        // Lookup and Customer types
         case "LookupType":
             return <Icons.Lookup />;
         case "CustomerType":
             return <Icons.Customer />;
-            case "OwnerType":
+        case "OwnerType":
             return <Icons.Owner />;
 
-            case "StateType":
+        case "StateType":
             return <Icons.Choice />;
-             case "StatusType":
+        case "StatusType":
             return <Icons.Choice />;
         // Default value for unsupported or undefined types
         default:
